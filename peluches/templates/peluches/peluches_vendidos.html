@@ -1,0 +1,28 @@
+{% extends "peluches/base.html" %}
+{% block body %}
+    <h2>Peluches</h2>
+    <div class="coleccion">
+        {% if peluches %}
+            <div class="productos-contenedor">
+                {% for x in peluches %}
+                    <div class="card position-relative" style="width: 18rem;">
+                        <!-- Etiqueta VENDIDO -->
+                        {% if x.estado_revision == 'Vendido' %}
+                            <div class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</div>
+                        {% endif %}
+                        <!-- Imagenes -->
+                        {% if x.imagenes.all %}
+                            <img src="{{ x.imagenes.all.0.imagen.url }}" class="img-fluid">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ x.nombre }}</h5>
+                            <p class="price card-text">{{ x.categoria }}</p>
+                            <p class="price card-text">${{ x.precio }}</p>
+                            <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-primary">Ver Peluche</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

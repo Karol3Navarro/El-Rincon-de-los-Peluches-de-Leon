@@ -1,0 +1,20 @@
+{% extends "admin_peluches/base.html" %}
+{% block body %}
+    <div style="text-align: center;">
+        <h2>Formulario</h2>
+        <form action="categoriaAdd" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <pre>Categoria: <input type="text" name="categoria"></pre>
+            <input type="submit" name="opcion" value="Agregar" class="btn btn-primary">
+        </form>
+
+        <a href="{% url 'crud' %}">⬅ Volver</a>
+
+    </div>
+
+    <div id="idMensajes">
+        {% if mensaje %}
+            {{ mensaje }}
+        {% endif %}
+    </div>
+{% endblock %}

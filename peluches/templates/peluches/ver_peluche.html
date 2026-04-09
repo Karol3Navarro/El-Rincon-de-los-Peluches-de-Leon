@@ -1,0 +1,66 @@
+{% extends "peluches/base.html" %}
+
+{% block extra_head %}
+    <meta property="og:title" content="{{ peluche.nombre }}">
+    <meta property="og:description" content="Hermoso peluche disponible 🧸">
+    <meta property="og:image" content="{{ imagen_url }}">
+    <meta property="og:url" content="{{ producto_url }}">
+    <meta property="og:type" content="website">
+{% endblock %}
+
+{% block body %}
+
+    <h2>{{peluche.nombre}}</h2>
+    <!-- Mostrar estado -->
+    {% if peluche.estado_revision == 'Vendido' %}
+        <span class="badge bg-danger">Vendido</span>
+    {% endif %}
+    <p>Categoría: {{peluche.categoria}}</p>
+    <p>Precio: ${{peluche.precio}}</p>
+    <p>Descripción: {{peluche.descripcion}}</p>
+    <a href="https://wa.me/{{ telefono_whatsapp }}?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">WhatsApp</a>
+    
+
+    <!-- <a href="https://wa.me/56975769692?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">
+        WhatsApp
+    </a> -->
+    {% if peluche.imagenes.exists %}
+        <div class="swiper mySwiperPeluche">
+            <div class="swiper-wrapper">
+                {% for img in peluche.imagenes.all %}
+                    <div class="swiper-slide">
+                        <img src="{{ img.imagen.url }}" class="img-fluid">
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Navegación -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <!-- Paginación opcional -->
+            <div class="swiper-pagination"></div>
+        </div>
+    {% else %}
+        <p>No hay imágenes disponibles</p>
+    {% endif %}
+
+    {% if peluches_relacionados %}
+        <h3>Peluches relacionados</h3>
+        <div class="row">
+            {% for x in peluches_relacionados %}
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100">
+                        {% if x.imagenes.exists %}
+                            <img src="{{ x.imagenes.first.imagen.url }}" class="card-img-top">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ x.nombre }}</h5>
+                            <p class="price card-text">{{ x.categoria }}</p>
+                            <p class="price card-text">${{ x.precio }}</p>
+                            <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-primary btn-sm">Ver Peluche</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

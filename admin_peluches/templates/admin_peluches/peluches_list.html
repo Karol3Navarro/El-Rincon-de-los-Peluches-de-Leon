@@ -1,0 +1,67 @@
+{% extends "admin_peluches/base.html" %}
+{% block body %}
+    <h2>Peluches</h2>
+
+    <form method="get" class="mb-3">
+        <label for="estado">Filtrar por estado:</label>
+        <select name="estado" id="estado" onchange="this.form.submit()">
+            {% for estado in estados %}
+                <option value="{{ estado }}" {% if estado == estado_seleccionado %}selected{% endif %}>
+                    {{ estado }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div id="idMensaje">
+        {% if mensaje %}
+            {{mensaje}}
+        {% endif %}
+    </div>
+    <div class="coleccion">
+        {% if peluches %}
+            <div class="productos-contenedor">
+                {% for x in peluches %}
+                    <div class="card position-relative" style="width: 18rem;">
+                        <!-- Etiquetas -->
+                        {% if x.estado_revision %}
+                            {% if x.estado_revision == 'Publicado' %}
+                                <div class="badge bg-success position-absolute top-0 start-0 m-2">
+                                    Publicado
+                                </div>
+                            {% elif x.estado_revision == 'Vendido' %}
+                                <div class="badge bg-danger position-absolute top-0 start-0 m-2">
+                                    Vendido
+                                </div>
+                            {% elif x.estado_revision == 'Sin Publicar' %}
+                                <div class="badge bg-secondary position-absolute top-0 start-0 m-2">
+                                    Sin Publicar
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        <!-- Imagenes -->
+                        {% if x.imagenes.all %}
+                            <img src="{{ x.imagenes.all.0.imagen.url }}" class="card-img-top">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ x.nombre }}</h5>
+                            <p class="card-text">{{ x.categoria }}</p>
+                            <p class="card-text">{{ x.precio }}</p>
+                            <a href="{% url 'peluches_findEdit' pk=x.id_peluche %}" class="btn btn-primary">Modificar</a>
+                            <a href="{% url 'peluches_del' pk=x.id_peluche %}" class="btn btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No hay peluches para mostrar.</p>
+        {% endif %}
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#idMensajes".delay(2000).fadeOut("slow"));
+        });
+    </script>
+{% endblock %}

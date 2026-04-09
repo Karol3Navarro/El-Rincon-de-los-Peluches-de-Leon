@@ -1,0 +1,41 @@
+{% extends "admin_peluches/base.html" %}
+{% block body %}
+    <div style="text-align: center;">
+        <h2>Formulario</h2>
+        <form action="peluchesAdd" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <pre>Nombre: <input type="text" name="nombre"></pre>
+            <pre>Categoria: 
+                <select name="categoria">
+                    {% for categoria in categorias %}
+                        <option value="{{categoria.id_categoria}}">{{categoria.categoria}}</option>
+                    {% endfor %}
+                </select>
+            </pre>
+            <pre>Precio: <input type="text" name="precio"></pre>
+            <pre>Descripción: <textarea name="descripcion" rows="4" cols="30"></textarea></pre>
+            <pre>Estado:
+                <select name="estado_revision">
+                    {% for value, label in estado_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </pre>
+            <pre>Imagenes: <input type="file" name="imagen" id="imagenesInput" multiple required></pre>
+
+            <h4>Previsualización de imágenes</h4>
+            <div id="preview" style="margin:10px;"></div>
+
+            <input type="submit" name="opcion" value="Agregar" class="btn btn-primary">
+        </form>
+
+        <a href="{% url 'crud' %}">⬅ Volver</a>
+
+    </div>
+
+    <div id="idMensajes">
+        {% if mensaje %}
+            {{ mensaje }}
+        {% endif %}
+    </div>
+{% endblock %}

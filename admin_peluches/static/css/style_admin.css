@@ -1,0 +1,16 @@
+.coleccion{
+    width: calc(100% - 240px);
+    float: right;
+    margin-top: 20px;
+}
+.coleccion .col-lib-vid{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.productos-contenedor{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}

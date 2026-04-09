@@ -1,0 +1,57 @@
+{% extends "peluches/base.html" %}
+{% load static %}
+{% block body %}
+    <div id="carouselExample" class="carousel slide">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'img/Ecuador.png' %}" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'img/Chile.png' %}" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'img/Whatsapp_.png' %}" class="d-block w-100" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <center><h2>Peluches</h2></center>
+    <!-- No deja poner mas de 3 cards -->
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            {% for x in peluches %}
+                <div class="swiper-slide">
+                    <div class="card-product position-relative">
+                        <!-- Etiqueta de VENDIDO -->
+                        {% if x.estado_revision == 'Vendido' %}
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</span>
+                        {% endif %}
+                        <div class="card-body">
+                            {% if x.imagenes.all %}
+                                <img src="{{ x.imagenes.all.0.imagen.url }}" class="img-fluid">
+                            {% endif %}
+                            <h5 class="card-title recorte">{{ x.nombre }}</h5>
+                            <p class="price card-text">{{ x.categoria }}</p>
+                            <p class="price card-text">${{ x.precio }}</p>
+                            <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-primary">Ver Peluche</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Navegación -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+  
+{% endblock %}

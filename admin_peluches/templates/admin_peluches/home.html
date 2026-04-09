@@ -1,0 +1,42 @@
+{% extends "admin_peluches/base.html" %}
+{% load static %}
+{% block body %}
+    
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Peluches Publicados</h5>
+                    <p class="card-text fs-3">{{ total_publicados }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Peluches Vendidos</h5>
+                    <p class="card-text fs-3">{{ total_vendidos }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Ventas del Día</h5>
+                    <p class="card-text fs-3">{{ ventas_dia }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Entregas Pendientes</h5>
+                    <p class="card-text fs-3">{{ entregas_pendientes }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
