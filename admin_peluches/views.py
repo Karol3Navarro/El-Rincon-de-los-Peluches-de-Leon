@@ -1,16 +1,19 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Categoria, Peluche, PelucheImagen
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os
 from django.utils import timezone
 from django.db.models import Count
+from django.utils.dateparse import parse_datetime
+from django.http import JsonResponse
+
 # Create your views here.
 
 def home(request):
     # Total de peluches por estado
     total_publicados = Peluche.objects.filter(estado_revision='Publicado').count()
-    total_vendidos = Peluche.objects.filter(estado_revision='Vendido').count()
+    total_vendidos = Peluche.objects.filter(estado_revision='Vendido', entregado=True).count()
     
     # Ventas del día (suponiendo que la fecha de venta sea cuando se pone 'Vendido')
     # Necesitarías un campo 'fecha_venta' en tu modelo Peluche para esto
@@ -23,7 +26,6 @@ def home(request):
     context = {
         'total_publicados': total_publicados,
         'total_vendidos': total_vendidos,
-        'ventas_dia': ventas_dia,
         'entregas_pendientes': entregas_pendientes
     }
     return render(request, 'admin_peluches/home.html', context)
@@ -42,25 +44,31 @@ def categoriaAdd(request):
         return render(request, 'admin_peluches/categoria_add.html', context)
 
 #----Peluches----
-def crud(request):
-    # peluches = Peluche.objects.all()
-    # context = {'peluches': peluches}
-    # return render(request, 'admin_peluches/peluches_list.html', context)
+def peluches_list(request):
     # Obtener filtro desde GET
     estado_filtro = request.GET.get('estado', 'Todos')  # default = Todos
+    entrega_filtro = request.GET.get('entrega', 'Todos')
+    peluches = Peluche.objects.all()
+
+    # filtro por estado
+    if estado_filtro != 'Todos':
+        peluches = peluches.filter(estado_revision=estado_filtro)
     
-    if estado_filtro == 'Todos':
-        peluches = Peluche.objects.all()
-    else:
-        peluches = Peluche.objects.filter(estado_revision=estado_filtro)
-    
+    # filtro por entrega (solo aplica si está vendido normalmente)
+    if entrega_filtro == 'pendiente':
+        peluches = peluches.filter(entregado=False, estado_revision='Vendido')
+
+    elif entrega_filtro == 'entregado':
+        peluches = peluches.filter(entregado=True, estado_revision='Vendido')
+
     # Para llenar el dropdown de filtros
     estados = ['Todos'] + [choice[0] for choice in Peluche.ESTADO_REVISION]
     
     context = {
         'peluches': peluches,
         'estados': estados,
-        'estado_seleccionado': estado_filtro
+        'estado_seleccionado': estado_filtro,
+        'entrega_seleccionado': entrega_filtro,
     }
     return render(request, 'admin_peluches/peluches_list.html', context)
 
@@ -76,17 +84,38 @@ def peluchesAdd(request):
         descripcion = request.POST.get("descripcion")
         estado = request.POST.get("estado_revision")
         imagenes = request.FILES.getlist("imagen")
+        fecha_entrega = request.POST.get("fecha_entrega")
+        lugar_entrega = request.POST.get("lugar_entrega")
         objCategoria= Categoria.objects.get(id_categoria= categoria)
 
-        obj= Peluche.objects.create(nombre=nombre, categoria=objCategoria, precio=precio, descripcion=descripcion, estado_revision=estado)
+
+        obj= Peluche.objects.create(
+            nombre=nombre, 
+            categoria=objCategoria, 
+            precio=precio, 
+            descripcion=descripcion, 
+            estado_revision=estado)
+        
+        # 🆕 lógica de entrega
+        if estado == "Vendido":
+            if fecha_entrega:
+                obj.fecha_entrega = parse_datetime(fecha_entrega)
+            obj.lugar_entrega = lugar_entrega
+            obj.entregado = False  # queda pendiente
+        else:
+            # limpiar si no está vendido
+            obj.fecha_entrega = None
+            obj.lugar_entrega = None
+            obj.entregado = False
+        
+        obj.save()
         # Guardar múltiples imágenes
         for img in imagenes:
             PelucheImagen.objects.create(
                 peluche=obj,
                 imagen=img
             )
-        obj.save()
-
+        
         context={'mensaje':"Ok, datos grabados"}
         return render(request, 'admin_peluches/peluches_add.html', context)
 
@@ -136,6 +165,8 @@ def peluchesUpdate(request):
         descripcion = request.POST.get("descripcion")
         estado = request.POST.get("estado_revision")
         imagenes = request.FILES.getlist("imagenes")
+        fecha_entrega = request.POST.get("fecha_entrega")
+        lugar_entrega = request.POST.get("lugar_entrega")
 
         objCategoria = Categoria.objects.get(id_categoria=categoria)
         peluche = Peluche.objects.get(id_peluche=id_peluche)
@@ -146,14 +177,25 @@ def peluchesUpdate(request):
         peluche.descripcion=descripcion
         peluche.estado_revision=estado
 
+        # 🆕 lógica de entrega
+        if estado == "Vendido":
+            if fecha_entrega:
+                peluche.fecha_entrega = parse_datetime(fecha_entrega)
+            peluche.lugar_entrega = lugar_entrega
+            peluche.entregado = False  # queda pendiente
+        else:
+            # limpiar si no está vendido
+            peluche.fecha_entrega = None
+            peluche.lugar_entrega = None
+            peluche.entregado = False
+
         peluche.save()
 
         for img in imagenes:
             PelucheImagen.objects.create(peluche=peluche, imagen=img)
 
         categorias = Categoria.objects.all()
-        context={'mensaje': "Ok, datos actualizados", 'categorias': categorias, 'peluche': peluche}
-        return render(request, 'admin_peluches/peluches_edit.html', context)
+        return redirect('peluche', id_peluche=peluche.id_peluche)
 
 def peluche_imagen_del(request, id):
     img = PelucheImagen.objects.get(id=id)
@@ -167,3 +209,45 @@ def peluche_imagen_del(request, id):
     img.delete()
 
     return redirect('peluches_findEdit', pk=peluche_id)
+
+def peluche(request, id_peluche):
+    peluche = get_object_or_404(Peluche, id_peluche=id_peluche)
+
+    imagen_url = ""
+    if peluche.imagenes.exists():
+        imagen_url = request.build_absolute_uri(peluche.imagenes.first().imagen.url)
+
+    context = {'peluche': peluche, 'imagen_url': imagen_url }
+    return render(request, 'admin_peluches/peluche.html', context)
+
+#---Calendario
+def eventos_entrega(request):
+    peluches = Peluche.objects.filter(fecha_entrega__isnull=False, entregado=False)
+
+    eventos = []
+    for p in peluches:
+        if p.fecha_entrega:
+            imagen_url = ""
+            primera_img = p.imagenes.first()
+            if primera_img:
+                imagen_url = primera_img.imagen.url
+
+            eventos.append({
+                "id": p.id_peluche,
+                "title": p.nombre,
+                "start": p.fecha_entrega.strftime("%Y-%m-%dT%H:%M:%S"),
+                "description": p.lugar_entrega or "",
+                "image": imagen_url,
+            })
+
+    return JsonResponse(eventos, safe=False)
+
+def calendario(request):
+    return render(request, 'admin_peluches/calendario.html')
+
+def marcar_entregado(request, id):
+    peluche = Peluche.objects.get(id_peluche=id)
+    peluche.entregado = True
+    peluche.save()
+
+    return redirect('calendario')

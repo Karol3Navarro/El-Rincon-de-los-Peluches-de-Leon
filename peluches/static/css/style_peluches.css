@@ -83,3 +83,31 @@
     height: auto;
     border-radius: 10px;
 }
+
+
+/* Footer */
+.footer-text {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.footer-social a {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.footer-social a img {
+    width: 32px;
+    height: 32px;
+}
+
+@media (max-width: 600px) {
+    .footer-social a img {
+        width: 24px;
+        height: 24px;
+    }
+}

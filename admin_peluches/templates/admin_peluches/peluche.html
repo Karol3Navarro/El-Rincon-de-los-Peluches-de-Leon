@@ -1,0 +1,47 @@
+{% extends "admin_peluches/base.html" %}
+{% load static %}
+{% block body %}
+
+    <h2>{{peluche.nombre}}</h2>
+    <!-- Mostrar estado -->
+    {% if peluche.estado_revision == 'Vendido' %}
+        <span class="badge bg-danger">Vendido</span>
+        <!-- Etiquetas Entregado-->
+        {% if peluche.entregado %}
+            <span class="badge bg-dark">Entregado</span>
+        {% else %}
+            <span class="badge bg-warning text-dark">Sin Entregar</span>
+        {% endif %}
+    {% endif %}
+    <p>Categoría: {{peluche.categoria}}</p>
+    <p>Precio: ${{peluche.precio}}</p>
+    <p>Descripción: {{peluche.descripcion}}</p>
+    <div class="mt-3">
+        <a href="{% url 'peluches_findEdit' pk=peluche.id_peluche %}" class="btn btn-primary">Modificar</a>
+        <a href="{% url 'peluches_del' pk=peluche.id_peluche %}" class="btn btn-danger">Eliminar</a>
+    </div>
+    {% if peluche.imagenes.exists %}
+        <div class="swiper mySwiperPeluche">
+            <div class="swiper-wrapper">
+                {% for img in peluche.imagenes.all %}
+                    <div class="swiper-slide">
+                        <img src="{{ img.imagen.url }}" class="img-fluid">
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Navegación -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <!-- Paginación opcional -->
+            <div class="swiper-pagination"></div>
+        </div>
+    {% else %}
+        <p>No hay imágenes disponibles</p>
+    {% endif %}
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}
+        <script src="{% static 'js/scripts_admin.js' %}"></script>
+    {% endblock %}
+{% endblock %}

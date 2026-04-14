@@ -19,9 +19,12 @@ class Peluche(models.Model):
     id_peluche = models.AutoField(db_column='idPeluche', primary_key=True)
     nombre = models.CharField(max_length=20, blank=False, null=False)
     categoria = models.ForeignKey('categoria', on_delete=models.CASCADE, db_column='idCategoria')
-    precio = models.CharField(max_length=20, null=True, blank=True)
+    precio = models.PositiveIntegerField(null=True, blank=True)
     descripcion = models.TextField(default="Sin descripción")
     estado_revision = models.CharField(max_length=20, choices=ESTADO_REVISION, default='Sin Publicar')
+    fecha_entrega = models.DateTimeField(null=True, blank=True)
+    lugar_entrega = models.CharField(max_length=255, null=True, blank=True)
+    entregado = models.BooleanField(default=False)
     
     def __str__(self):
         return str(self.nombre)

@@ -1,4 +1,5 @@
 {% extends "admin_peluches/base.html" %}
+{% load static %}
 {% block body %}
 
     <div style="text-align: center;">
@@ -27,7 +28,7 @@
                 <pre>Precio: <input type="text" name="precio" value="{{ peluche.precio }}"></pre>
                 <pre>Descripción: <textarea name="descripcion">{{ peluche.descripcion }}</textarea></pre>
                 <pre>Estado:
-                    <select name="estado_revision">
+                    <select name="estado_revision" id="estado_revision">
                         {% for value, label in estado_choices %}
                             <option value="{{ value }}" {% if peluche.estado_revision == value %}selected{% endif %}>
                                 {{ label }}
@@ -35,6 +36,17 @@
                         {% endfor %}
                     </select>
                 </pre>
+                <!-- 🆕 CAMPOS DE ENTREGA -->
+                <div id="campos_entrega" style="display:none;">
+                    <pre>Fecha y hora entrega:
+                        <input type="datetime-local" name="fecha_entrega"
+                        value="{{ peluche.fecha_entrega|date:'Y-m-d\\TH:i' }}">
+                    </pre>
+
+                    <pre>Lugar entrega:
+                        <input type="text" name="lugar_entrega" value="{{ peluche.lugar_entrega }}">
+                    </pre>
+                </div>
                 <h4>Imágenes actuales</h4>
 
                 {% if peluche.imagenes.all %}
@@ -55,19 +67,9 @@
                 <input type="submit" value="Actualizar" class="btn btn-primary">
             </form>
         {% endif %}
-
-        <div id="idMensajes">
-            {% if mensaje %}
-                {{ mensaje }}
-            {% endif %}
-        </div>
-        <a href="{% url 'crud' %}">⬅ Volver</a>
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $("#idMensajes").delay(2000).fadeOut("slow");
-        });
-    </script>
+    {% block extra_js %}
+        <script src="{% static 'js/scripts_admin.js' %}"></script>
+    {% endblock %}
 {% endblock %}

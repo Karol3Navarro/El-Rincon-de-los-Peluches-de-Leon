@@ -29,6 +29,10 @@
             <div class="productos-contenedor">
                 {% for x in peluches %}
                     <div class="card" style="width: 18rem;">
+                        <!-- Etiqueta VENDIDO -->
+                        {% if x.estado_revision == 'Vendido' %}
+                            <div class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</div>
+                        {% endif %}
                         <!-- Imagenes -->
                         {% if x.imagenes.all %}
                             <img src="{{ x.imagenes.all.0.imagen.url }}" class="img-fluid">

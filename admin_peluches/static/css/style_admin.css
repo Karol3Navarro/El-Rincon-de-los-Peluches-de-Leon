@@ -14,3 +14,16 @@
     gap: 20px;
     margin-bottom: 20px;
 }
+
+/* Swiper Img Peluche */
+.mySwiperPeluche {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+.mySwiperPeluche .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

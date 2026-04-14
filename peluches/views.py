@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from admin_peluches.models import Categoria, Peluche, Configuracion
+from django.db.models import Q
 
 # Create your views here.
 
@@ -9,12 +10,14 @@ def index(request):
     return render(request, 'peluches/index.html', context)
 
 def peluches(request):
-    peluches = Peluche.objects.filter(estado_revision='Publicado')
+    # peluches = Peluche.objects.filter(estado_revision='Publicado')
+    peluches= Peluche.objects.all()
 
     # Obtener filtros desde GET
     categoria_id = request.GET.get('categoria')
     precio_min = request.GET.get('precio_min')
     precio_max = request.GET.get('precio_max')
+    query = request.GET.get('q')
 
     if categoria_id and categoria_id != "":
         peluches = peluches.filter(categoria_id=categoria_id)
@@ -27,6 +30,12 @@ def peluches(request):
     if precio_max and precio_max != "":
         precio_max_val = int(precio_max.replace(".", ""))
         peluches = peluches.filter(precio__lte=precio_max_val)
+    
+    #Filtrar por búsqueda
+    if query and query.strip() != "":  
+        peluches = peluches.filter(
+            Q(nombre__icontains=query) | Q(categoria__categoria__icontains=query)
+        )
 
     categorias = Categoria.objects.all()
 
@@ -36,63 +45,9 @@ def peluches(request):
         'filtro_categoria': categoria_id,
         'filtro_precio_min': precio_min,
         'filtro_precio_max': precio_max,
+        'query': query,
     }
     return render(request, 'peluches/peluches.html', context)
-
-
-# def peluches(request):
-#     peluches_qs = Peluche.objects.filter(estado_revision='Publicado')
-
-#     # Obtener filtros desde GET
-#     categoria_id = request.GET.get('categoria', '')
-#     precio_min = request.GET.get('precio_min', '')
-#     precio_max = request.GET.get('precio_max', '')
-
-#     # Filtrar por categoría primero
-#     if categoria_id:
-#         peluches_qs = peluches_qs.filter(categoria_id=categoria_id)
-
-#     # Filtrar por precio en Python
-#     peluches = []
-#     for p in peluches_qs:
-#         try:
-#             precio_num = int(p.precio.replace(".", "")) if p.precio else 0
-#         except ValueError:
-#             precio_num = 0
-
-#         if precio_min:
-#             try:
-#                 min_val = int(precio_min.replace(".", ""))
-#                 if precio_num < min_val:
-#                     continue
-#             except ValueError:
-#                 pass
-
-#         if precio_max:
-#             try:
-#                 max_val = int(precio_max.replace(".", ""))
-#                 if precio_num > max_val:
-#                     continue
-#             except ValueError:
-#                 pass
-
-#         peluches.append(p)
-
-#     categorias = Categoria.objects.all()
-
-#     context = {
-#         'peluches': peluches,
-#         'categorias': categorias,
-#         'filtro_categoria': categoria_id,
-#         'filtro_precio_min': precio_min,
-#         'filtro_precio_max': precio_max,
-#     }
-#     return render(request, 'peluches/peluches.html', context)
-
-def peluches_vendidos(request):
-    peluches = Peluche.objects.filter(estado_revision='Vendido')
-    context= {'peluches': peluches}
-    return render(request, 'peluches/peluches_vendidos.html', context)
 
 #Aun no se puede ver la imagen en Whatsapp
 #Chatgpt dice probar con ngrok

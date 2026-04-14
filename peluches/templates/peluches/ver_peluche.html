@@ -18,7 +18,10 @@
     <p>Categoría: {{peluche.categoria}}</p>
     <p>Precio: ${{peluche.precio}}</p>
     <p>Descripción: {{peluche.descripcion}}</p>
-    <a href="https://wa.me/{{ telefono_whatsapp }}?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">WhatsApp</a>
+    {% if peluche.estado_revision != 'Vendido' %}
+        <a href="https://wa.me/{{ telefono_whatsapp }}?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">WhatsApp</a>
+    {% endif %}
+    
     
 
     <!-- <a href="https://wa.me/56975769692?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">
@@ -49,6 +52,10 @@
             {% for x in peluches_relacionados %}
                 <div class="col-md-3 mb-3">
                     <div class="card h-100">
+                        <!-- Etiqueta de VENDIDO -->
+                        {% if x.estado_revision == 'Vendido' %}
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</span>
+                        {% endif %}
                         {% if x.imagenes.exists %}
                             <img src="{{ x.imagenes.first.imagen.url }}" class="card-img-top">
                         {% endif %}

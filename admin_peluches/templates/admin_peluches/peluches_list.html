@@ -1,4 +1,5 @@
 {% extends "admin_peluches/base.html" %}
+{% load static %}
 {% block body %}
     <h2>Peluches</h2>
 
@@ -24,21 +25,21 @@
                 {% for x in peluches %}
                     <div class="card position-relative" style="width: 18rem;">
                         <!-- Etiquetas -->
-                        {% if x.estado_revision %}
+                        <div class="d-flex gap-1 position-absolute top-0 start-0 m-2">
                             {% if x.estado_revision == 'Publicado' %}
-                                <div class="badge bg-success position-absolute top-0 start-0 m-2">
-                                    Publicado
-                                </div>
+                                <span class="badge bg-success">Publicado</span>
                             {% elif x.estado_revision == 'Vendido' %}
-                                <div class="badge bg-danger position-absolute top-0 start-0 m-2">
-                                    Vendido
-                                </div>
+                                <span class="badge bg-danger">Vendido</span>
+                                <!-- Etiquetas Entregado-->
+                                {% if x.entregado %}
+                                    <span class="badge bg-dark">Entregado</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Sin Entregar</span>
+                                {% endif %}
                             {% elif x.estado_revision == 'Sin Publicar' %}
-                                <div class="badge bg-secondary position-absolute top-0 start-0 m-2">
-                                    Sin Publicar
-                                </div>
+                                <span class="badge bg-secondary">Sin Publicar</span>
                             {% endif %}
-                        {% endif %}
+                        </div>
                         <!-- Imagenes -->
                         {% if x.imagenes.all %}
                             <img src="{{ x.imagenes.all.0.imagen.url }}" class="card-img-top">
@@ -47,8 +48,7 @@
                             <h5 class="card-title">{{ x.nombre }}</h5>
                             <p class="card-text">{{ x.categoria }}</p>
                             <p class="card-text">{{ x.precio }}</p>
-                            <a href="{% url 'peluches_findEdit' pk=x.id_peluche %}" class="btn btn-primary">Modificar</a>
-                            <a href="{% url 'peluches_del' pk=x.id_peluche %}" class="btn btn-danger">Eliminar</a>
+                            <a href="{% url 'peluche' id_peluche=x.id_peluche %}" class="btn btn-primary">Ver Peluche</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -57,11 +57,7 @@
             <p>No hay peluches para mostrar.</p>
         {% endif %}
     </div>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $("#idMensajes".delay(2000).fadeOut("slow"));
-        });
-    </script>
+    {% block extra_js %}
+        <script src="{% static 'js/scripts_admin.js' %}"></script>
+    {% endblock %}
 {% endblock %}

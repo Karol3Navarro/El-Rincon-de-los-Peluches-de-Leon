@@ -3,11 +3,15 @@ from . import views
 
 urlpatterns = [
     path('home', views.home, name='home'),
-    path('crud', views.crud, name= 'crud'),
+    path('peluches_list', views.peluches_list, name= 'peluches_list'),
     path('categoriaAdd', views.categoriaAdd, name= 'categoriaAdd'),
     path('peluchesAdd', views.peluchesAdd, name= 'peluchesAdd'),
     path('peluches_del/<str:pk>', views.peluches_del, name='peluches_del'),
     path('peluches_findEdit/<str:pk>', views.peluches_findEdit, name='peluches_findEdit'),
     path('peluchesUpdate', views.peluchesUpdate, name='peluchesUpdate'),
     path('peluche_imagen_del/<int:id>/', views.peluche_imagen_del, name='peluche_imagen_del'),
+    path('peluche/<int:id_peluche>/', views.peluche, name='peluche'),
+    path('calendario/', views.calendario, name='calendario'),
+    path('eventos/', views.eventos_entrega, name='eventos_entrega'),
+    path('entregado/<int:id>/', views.marcar_entregado, name='marcar_entregado'),
 ]

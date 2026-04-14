@@ -1,4 +1,5 @@
 {% extends "admin_peluches/base.html" %}
+{% load static %}
 {% block body %}
     <div style="text-align: center;">
         <h2>Formulario</h2>
@@ -12,15 +13,25 @@
                     {% endfor %}
                 </select>
             </pre>
-            <pre>Precio: <input type="text" name="precio"></pre>
+            <pre>Precio: <input type="number" name="precio"></pre>
             <pre>Descripción: <textarea name="descripcion" rows="4" cols="30"></textarea></pre>
             <pre>Estado:
-                <select name="estado_revision">
+                <select name="estado_revision" id="estado_revision">
                     {% for value, label in estado_choices %}
                         <option value="{{ value }}">{{ label }}</option>
                     {% endfor %}
                 </select>
             </pre>
+            <!-- 🆕 CAMPOS DE ENTREGA -->
+            <div id="campos_entrega" style="display:none;">
+                <pre>Fecha y hora entrega:
+                    <input type="datetime-local" name="fecha_entrega"
+                    value="{{ peluche.fecha_entrega|date:'Y-m-d\\TH:i' }}">
+                </pre>
+                <pre>Lugar entrega:
+                    <input type="text" name="lugar_entrega" value="{{ peluche.lugar_entrega }}">
+                </pre>
+            </div>
             <pre>Imagenes: <input type="file" name="imagen" id="imagenesInput" multiple required></pre>
 
             <h4>Previsualización de imágenes</h4>
@@ -29,7 +40,7 @@
             <input type="submit" name="opcion" value="Agregar" class="btn btn-primary">
         </form>
 
-        <a href="{% url 'crud' %}">⬅ Volver</a>
+        <a href="{% url 'peluches' %}">⬅ Volver</a>
 
     </div>
 
@@ -38,4 +49,7 @@
             {{ mensaje }}
         {% endif %}
     </div>
+    {% block extra_js %}
+        <script src="{% static 'js/scripts_admin.js' %}"></script>
+    {% endblock %}
 {% endblock %}
