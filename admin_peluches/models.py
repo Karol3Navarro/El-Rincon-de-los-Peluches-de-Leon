@@ -23,6 +23,7 @@ class Peluche(models.Model):
     descripcion = models.TextField(default="Sin descripción")
     estado_revision = models.CharField(max_length=20, choices=ESTADO_REVISION, default='Sin Publicar')
     fecha_entrega = models.DateTimeField(null=True, blank=True)
+    fecha_venta = models.DateTimeField(null=True, blank=True)
     lugar_entrega = models.CharField(max_length=255, null=True, blank=True)
     entregado = models.BooleanField(default=False)
     

@@ -2,34 +2,31 @@
 {% load static %}
 {% block body %}
 
-    <h2 style="text-align:center;">📅 Calendario de Entregas</h2>
+    <div class="container py-4">
+        <h2 class="text-center mb-4">📅 Calendario de Entregas</h2>
+        <!-- CONTENEDOR ESTILIZADO -->
+        <div class="form-box p-3">
+            <div id="calendar"></div>
+        </div>
+    </div>
 
-    <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-
-    <div id="calendar" style="max-width: 900px; margin: 40px auto;"></div>
-
+    <!-- MODAL -->
     <div class="modal fade" id="eventoModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitulo"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body text-center">
-
-                <img id="modalImagen" src="" class="img-fluid rounded mb-3">
-
-                <p id="modalFecha"></p>
-                <p id="modalLugar"></p>
-
-            </div>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitulo"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImagen" src="" class="img-fluid rounded mb-3 shadow-sm" style="max-height: 250px; object-fit: cover;">
+                    <p id="modalFecha" class="mb-1 fw-bold"></p>
+                    <p id="modalLugar" class="text-muted"></p>
+                </div>
                 <div class="modal-footer">
                     <form id="formEntregado" method="POST">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn btn-success w-100">
                             ✔ Marcar como entregado
                         </button>
                     </form>
@@ -38,11 +35,11 @@
         </div>
     </div>
 
-    <!-- FullCalendar JS -->
+    <!-- FULLCALENDAR -->
     {% block extra_js %}
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
         <script src="{% static 'js/scripts_admin.js' %}"></script>
     {% endblock %}
 
-
-{% endblock %}  
+{% endblock %}

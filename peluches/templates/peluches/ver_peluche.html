@@ -9,65 +9,71 @@
 {% endblock %}
 
 {% block body %}
-
-    <h2>{{peluche.nombre}}</h2>
-    <!-- Mostrar estado -->
-    {% if peluche.estado_revision == 'Vendido' %}
-        <span class="badge bg-danger">Vendido</span>
-    {% endif %}
-    <p>Categoría: {{peluche.categoria}}</p>
-    <p>Precio: ${{peluche.precio}}</p>
-    <p>Descripción: {{peluche.descripcion}}</p>
-    {% if peluche.estado_revision != 'Vendido' %}
-        <a href="https://wa.me/{{ telefono_whatsapp }}?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">WhatsApp</a>
-    {% endif %}
-    
-    
-
-    <!-- <a href="https://wa.me/56975769692?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-success">
-        WhatsApp
-    </a> -->
-    {% if peluche.imagenes.exists %}
-        <div class="swiper mySwiperPeluche">
-            <div class="swiper-wrapper">
-                {% for img in peluche.imagenes.all %}
-                    <div class="swiper-slide">
-                        <img src="{{ img.imagen.url }}" class="img-fluid">
-                    </div>
-                {% endfor %}
-            </div>
-            <!-- Navegación -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-            <!-- Paginación opcional -->
-            <div class="swiper-pagination"></div>
-        </div>
-    {% else %}
-        <p>No hay imágenes disponibles</p>
-    {% endif %}
-
-    {% if peluches_relacionados %}
-        <h3>Peluches relacionados</h3>
-        <div class="row">
-            {% for x in peluches_relacionados %}
-                <div class="col-md-3 mb-3">
-                    <div class="card h-100">
-                        <!-- Etiqueta de VENDIDO -->
-                        {% if x.estado_revision == 'Vendido' %}
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</span>
-                        {% endif %}
-                        {% if x.imagenes.exists %}
-                            <img src="{{ x.imagenes.first.imagen.url }}" class="card-img-top">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ x.nombre }}</h5>
-                            <p class="price card-text">{{ x.categoria }}</p>
-                            <p class="price card-text">${{ x.precio }}</p>
-                            <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-primary btn-sm">Ver Peluche</a>
+    <div class="container py-4">
+        <div class="row align-items-start peluche-detalle">
+            <div class="col-md-6 mb-3">
+                {% if peluche.imagenes.exists %}
+                    <div class="swiper mySwiperPeluche">
+                        <div class="swiper-wrapper">
+                            {% for img in peluche.imagenes.all %}
+                                <div class="swiper-slide">
+                                    <img src="{{ img.imagen.url }}" class="img-fluid rounded">
+                                </div>
+                            {% endfor %}
                         </div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-pagination"></div>
                     </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <div class="peluche-box">
+                    {% if peluche.estado_revision == 'Vendido' %}
+                        <span class="badge bg-danger mb-2">Vendido</span>
+                    {% endif %}
+                    <h2 class="titulo-peluche">{{ peluche.nombre }}</h2>
+                    <p><strong>Categoría:</strong> {{ peluche.categoria }}</p>
+                    <p class="precio">${{ peluche.precio|clp }}</p>
+                    <p class="descripcion">{{ peluche.descripcion }}</p>
+                    {% if peluche.estado_revision != 'Vendido' %}
+                        <a href="https://wa.me/{{ telefono_whatsapp }}?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-whatsapp mt-2">
+                            WhatsApp
+                        </a>
+                    {% endif %}
                 </div>
-            {% endfor %}
+            </div>
         </div>
-    {% endif %}
+
+        <!-- ABAJO: RELACIONADOS -->
+        {% if peluches_relacionados %}
+            <div class="mt-5">
+                <h3>Peluches relacionados</h3>
+                <div class="row">
+                    {% for x in peluches_relacionados %}
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="card card-product h-100 position-relative">
+                                {% if x.estado_revision == 'Vendido' %}
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+                                        Vendido
+                                    </span>
+                                {% endif %}
+                                {% if x.imagenes.exists %}
+                                    <img src="{{ x.imagenes.first.imagen.url }}" class="card-img-top">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title recorte">{{ x.nombre }}</h5>
+                                    <p class="card-text">{{ x.categoria }}</p>
+                                    <p class="card-text precio">${{ x.precio|clp }}</p>
+                                    <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}"class="btn btn-primary-custom btn-sm">
+                                        Ver Peluche
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -1,75 +1,94 @@
 {% extends "admin_peluches/base.html" %}
 {% load static %}
 {% block body %}
-
-    <div style="text-align: center;">
+    <div class="container py-4">
         {% if peluche %}
-            <h2>Editar Peluche</h2>
-            <form action="{% url 'peluchesUpdate' %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <input type="hidden" name="id_peluche" value="{{ peluche.id_peluche }}">
-                <pre>Nombre: <input type="text" name="nombre" value="{{ peluche.nombre }}"></pre>
-                <pre>Categoria: 
-                    <select name="categoria">
-                        {% for categoria in categorias %}
-                            {% if categoria.id_categoria == peluche.categoria.id_categoria %} 
-                                <option value="{{ categoria.id_categoria }}" selected>
-                                    {{ categoria.categoria }} 
-                                </option>
-                            {% else %} 
-                            <option value="{{ categoria.id_categoria }}">
-                                {{ categoria.categoria }} 
-                            </option>
-                            {% endif %}
-                        {% endfor %} 
-                    </select> 
-                </pre>
-                <pre>Precio: <input type="text" name="precio" value="{{ peluche.precio }}"></pre>
-                <pre>Descripción: <textarea name="descripcion">{{ peluche.descripcion }}</textarea></pre>
-                <pre>Estado:
-                    <select name="estado_revision" id="estado_revision">
-                        {% for value, label in estado_choices %}
-                            <option value="{{ value }}" {% if peluche.estado_revision == value %}selected{% endif %}>
-                                {{ label }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </pre>
-                <!-- 🆕 CAMPOS DE ENTREGA -->
-                <div id="campos_entrega" style="display:none;">
-                    <pre>Fecha y hora entrega:
-                        <input type="datetime-local" name="fecha_entrega"
-                        value="{{ peluche.fecha_entrega|date:'Y-m-d\\TH:i' }}">
-                    </pre>
-
-                    <pre>Lugar entrega:
-                        <input type="text" name="lugar_entrega" value="{{ peluche.lugar_entrega }}">
-                    </pre>
-                </div>
-                <h4>Imágenes actuales</h4>
-
-                {% if peluche.imagenes.all %}
-                    {% for img in peluche.imagenes.all %}
-                        <div style="display:inline-block; margin:10px; border:1px solid #ccc; padding:10px;">
-                            <img src="{{ img.imagen.url }}" width="120"><br><br>
-
-                            <a href="{% url 'peluche_imagen_del' img.id %}" onclick="return confirm('¿Eliminar imagen?')" style="color:red;">
-                                ❌ Eliminar
-                            </a>
+        <h2 class="text-center mb-4">Editar Peluche</h2>
+        <form action="{% url 'peluchesUpdate' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="id_peluche" value="{{ peluche.id_peluche }}">
+            <div class="row">
+                <!-- IZQUIERDA: IMÁGENES -->
+                <div class="col-md-5 mb-3">
+                    <div class="image-preview-box">
+                        <h5>Imágenes actuales</h5>
+                        {% if peluche.imagenes.all %}
+                            <div class="preview-grid mb-3">
+                                {% for img in peluche.imagenes.all %}
+                                    <div class="preview-item">
+                                        <img src="{{ img.imagen.url }}">
+                                        <a href="{% url 'peluche_imagen_del' img.id %}" onclick="return confirm('¿Eliminar imagen?')" class="btn-eliminar">
+                                            ×
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="preview-placeholder">No hay imágenes</p>
+                        {% endif %}
+                        <hr>
+                        <h5>Agregar nuevas imágenes</h5>
+                        <div class="image-upload-box">
+                            <input type="file" name="imagenes" id="imagenesInput" multiple class="image-input">
+                            <div id="placeholder" class="preview-placeholder">
+                                📷 Arrastra o selecciona imágenes
+                            </div>
+                            <div id="preview" class="preview-grid"></div>
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <p>No hay imágenes</p>
-                {% endif %}
+                    </div>
+                </div>
+                <!-- DERECHA: FORM -->
+                <div class="col-md-7">
+                    <div class="form-box">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" value="{{ peluche.nombre }}"class="form-control mb-2">
 
-                <pre>Agregar nuevas imágenes: <input type="file" name="imagenes" multiple> </pre>
-                <input type="submit" value="Actualizar" class="btn btn-primary">
-            </form>
+                        <label>Categoría</label>
+                        <select name="categoria" class="form-select mb-2">
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id_categoria }}" {% if categoria.id_categoria == peluche.categoria.id_categoria %}selected{% endif %}>
+                                    {{ categoria.categoria }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <label>Precio</label>
+                        <input type="text" name="precio" value="{{ peluche.precio|clp }}" class="form-control mb-2">
+
+                        <label>Descripción</label>
+                        <textarea name="descripcion" rows="4" class="form-control mb-2">{{ peluche.descripcion }}</textarea>
+
+                        <label>Estado</label>
+                        <select name="estado_revision" id="estado_revision" class="form-select mb-2">
+                            {% for value, label in estado_choices %}
+                                <option value="{{ value }}" {% if peluche.estado_revision == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <!-- ENTREGA -->
+                        <div id="campos_entrega" class="mt-3" style="display:none;">
+                            <label>Fecha entrega</label>
+                            <input type="datetime-local" name="fecha_entrega" value="{{ peluche.fecha_entrega|date:'Y-m-d\\TH:i' }}" class="form-control mb-2">
+
+                            <label>Lugar entrega</label>
+                            <input type="text" name="lugar_entrega" value="{{ peluche.lugar_entrega }}" class="form-control mb-2">
+                        </div>
+                        <button type="submit" name="opcion" value="Actualizar" class="btn btn-custom mt-3 w-100">
+                            Actualizar Peluche
+                        </button>
+                        <a href="{% url 'peluches_list' %}" class="d-block mt-3 text-center">
+                            ⬅ Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
         {% endif %}
     </div>
 
     {% block extra_js %}
         <script src="{% static 'js/scripts_admin.js' %}"></script>
     {% endblock %}
+
 {% endblock %}

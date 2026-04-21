@@ -1,26 +1,102 @@
-/* Swiper Cards Index*/
-.container-items{
-    width: 100%;
-    padding: 15px;
+:root {
+    --bg-main: #fff3b0;        /* amarillo suave */
+    --bg-soft: #fff8d6;
+    --brown: #5a3e2b;         /* texto café */
+    --brown-dark: #3e2a1f;
+
+    --orange: #ff8c42;        /* botones */
+    --orange-hover: #ff7a1a;
+
+    /* acentos arcoíris suaves */
+    --rainbow-1: #ff6b6b;
+    --rainbow-2: #ffd93d;
+    --rainbow-3: #6bcB77;
+    --rainbow-4: #4d96ff;
+    --rainbow-5: #b892ff;
 }
 
-.swiper-slide{
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
+/* Navbar */
+.navbar-custom {
+    background: #fffdf5 !important;
+    border-bottom: 3px solid var(--orange);
+    font-family: 'Poppins', sans-serif;
+}
+.navbar-custom .nav-link {
+    color: var(--brown) !important;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.navbar-custom .nav-link:hover {
+    color: var(--orange) !important;
+}
+.navbar-custom .nav-link.active {
+    color: var(--orange) !important;
+}
+.navbar-custom .navbar-brand img {
+    border-radius: 8px;
+    transition: 0.3s;
+}
+.navbar-custom .navbar-brand img:hover {
+    transform: scale(1.05);
+}
+.navbar-custom .btn {
+    background: var(--orange) !important;
+    color: white !important;
+    border: none !important;
+}
+.navbar-custom .btn:hover {
+    background: var(--orange-hover) !important;
+}
+.navbar-custom .form-control {
+    border-radius: 10px;
+    border: 2px solid var(--orange);
+}
+.navbar-custom .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 66, 0.25);
+    border-color: var(--orange);
 }
 
+/*  */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--bg-main) !important;
+    color: var(--brown) !important;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', 'Nunito', sans-serif;
+    color: var(--brown-dark)!important;
+}
+
+/* Links */
+a {
+    color: var(--brown)!important;
+}
+
+a:hover {
+    color: var(--orange) !important;
+}
+
+button:not(.carousel-control-prev):not(.carousel-control-next) {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
+}
+
+/* Cards */
 .card-product{
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 250px;
     height: 100%;
-    background: #fff;
+    background: #fffdf5 !important;
     border: 2px solid #e4e4e4;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 12px rgba(90, 62, 43, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
 }
 .card-body {
@@ -29,20 +105,32 @@
     height: 100%;
     padding: 8px;
     text-align: center;
-    
 }
+
+.card-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(90, 62, 43, 0.25);
+}
+
 .card-body img {
     border-radius: 10px;
     object-fit: cover;
     height: 180px;
     width: 100%;
-    margin-bottom: 10px;
 }
 .card-body .btn{
     margin-top: auto;
+    background: var(--orange) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
 }
  .card-body .card-title{
     margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--brown-dark);
 }
 .recorte{
     white-space: nowrap;
@@ -50,14 +138,27 @@
     text-overflow: ellipsis;
     max-width: 100%;
     display: block;
+    color: var(--brown);
+}
+
+.container-items,
+.coleccion {
+    background: var(--bg-soft);
+    border-radius: 12px;
+}
+.card img {
+    width: 100%;
+    height: 250px;       /* altura fija */
+    object-fit: cover;   /* recorta sin deformar */
 }
 
 /* Peluches */
 .coleccion{
-    width: calc(100% - 240px);
-    float: right;
+    width: 100%;
     margin-top: 20px;
+    padding: 0 20px; /* opcional para espacio lateral */
 }
+
 .coleccion .col-lib-vid{
     display: flex;
     flex-wrap: wrap;
@@ -65,9 +166,39 @@
 }
 .productos-contenedor{
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    margin-bottom: 20px;
+}
+
+/* Ver_peluche */
+.peluche-detalle {
+    font-family: 'Open Sans', sans-serif;
+}
+.titulo-peluche {
+    font-family: 'Poppins', sans-serif;
+    color: var(--brown-dark);
+}
+.precio {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--orange);
+}
+.descripcion {
+    line-height: 1.6;
+}
+.btn-whatsapp {
+    background: var(--rainbow-3) !important;
+    color: white !important;
+    border-radius: 10px;
+}
+.btn-whatsapp:hover {
+    background: var(--rainbow-3) !important;
+}
+.peluche-box {
+    background: var(--bg-soft) !important;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(90, 62, 43, 0.15);
 }
 
 /* Swiper Img Peluche */
@@ -77,20 +208,79 @@
     margin: 20px auto;
     float: left;
 }
-
 .mySwiperPeluche .swiper-slide img {
     width: 100%;
     height: auto;
     border-radius: 10px;
 }
-
-
-/* Footer */
-.footer-text {
-    font-size: 14px;
-    opacity: 0.7;
+.mySwiperPeluche img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+/* Swiper Cards Index*/
+.container-items{
+    width: 100%;
+    padding: 15px;
 }
 
+.swiper {
+    width: 100%;
+    position: relative;
+    overflow: visible; 
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    z-index: 50;
+    color: var(--orange) !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    color: var(--orange-hover);
+    transform: scale(1.1);
+}
+
+.swiper-button-next {
+    right: 10px !important;
+}
+
+.swiper-button-prev {
+    left: 10px !important;
+}
+
+.swiper-wrapper {
+    align-items: stretch;
+}
+
+/* Footer */
+.footer {
+    background: linear-gradient(
+        135deg,
+        var(--bg-soft),
+        #fffdf5
+    );
+    border-top: 3px dashed var(--orange);
+    box-shadow: 0 -4px 18px rgba(255, 140, 66, 0.15);
+    text-align: center;
+    margin-top: 40px;
+    padding: 25px 15px;
+}
+.footer-text {
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    color: var(--brown);
+    opacity: 0.8;
+}
+.footer-social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* separación entre iconos */
+    margin-bottom: 10px;
+}
 .footer-social a {
     width: 40px;
     height: 40px;
@@ -99,15 +289,25 @@
     justify-content: center;
     text-decoration: none;
 }
-
 .footer-social a img {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
+    transition: transform 0.2s ease;
 }
 
+.footer-social a img:hover {
+    transform: scale(1.1);
+}
+
+/* Resposive */
 @media (max-width: 600px) {
     .footer-social a img {
-        width: 24px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
+    }
+}
+@media (max-width: 768px) {
+    .mySwiperPeluche img {
+        height: 280px;
     }
 }

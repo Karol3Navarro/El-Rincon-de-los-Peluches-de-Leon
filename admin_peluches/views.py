@@ -4,7 +4,8 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os
 from django.utils import timezone
-from django.db.models import Count
+from datetime import timedelta
+from django.db.models import Count, Sum, Q
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
 
@@ -15,10 +16,13 @@ def home(request):
     total_publicados = Peluche.objects.filter(estado_revision='Publicado').count()
     total_vendidos = Peluche.objects.filter(estado_revision='Vendido', entregado=True).count()
     
-    # Ventas del día (suponiendo que la fecha de venta sea cuando se pone 'Vendido')
-    # Necesitarías un campo 'fecha_venta' en tu modelo Peluche para esto
-    hoy = timezone.now().date()
-    ventas_dia = Peluche.objects.filter(estado_revision='Vendido', fecha_venta=hoy).count() if hasattr(Peluche, 'fecha_venta') else 0
+    # Ventas del día
+    hoy = timezone.localdate()
+
+    ventas_dia = Peluche.objects.filter(
+        estado_revision='Vendido',
+        fecha_venta__date=hoy
+    ).count()
     
     # Entregas pendientes (opcional, necesitas un campo 'entregado' booleano)
     entregas_pendientes = Peluche.objects.filter(estado_revision='Vendido', entregado=False).count() if hasattr(Peluche, 'entregado') else 0
@@ -26,22 +30,35 @@ def home(request):
     context = {
         'total_publicados': total_publicados,
         'total_vendidos': total_vendidos,
-        'entregas_pendientes': entregas_pendientes
+        'entregas_pendientes': entregas_pendientes,
+        'ventas_dia':ventas_dia
     }
     return render(request, 'admin_peluches/home.html', context)
 
+#---Categoria
 def categoriaAdd(request):
     if request.method != "POST":
         categorias = Categoria.objects.all()
-        context={'categorias':categorias}
+        context = {'categorias': categorias}
         return render(request, 'admin_peluches/categoria_add.html', context)
-    else:
-        categoria=request.POST["categoria"]
-        obj= Categoria.objects.create(categoria=categoria)
-        obj.save()
 
-        context={'mensaje':"Ok, categoria grabada"}
+    else:
+        categoria = request.POST["categoria"]
+        Categoria.objects.create(categoria=categoria)
+
+        categorias = Categoria.objects.all()  # 👈 RECARGAR LISTA
+
+        context = {
+            'categorias': categorias,
+            'mensaje': "Ok, categoría grabada"
+        }
+
         return render(request, 'admin_peluches/categoria_add.html', context)
+
+def categoria_delete(request, pk):
+    categoria = get_object_or_404(Categoria, id_categoria=pk)
+    categoria.delete()
+    return redirect('categoriaAdd')
 
 #----Peluches----
 def peluches_list(request):
@@ -49,6 +66,7 @@ def peluches_list(request):
     estado_filtro = request.GET.get('estado', 'Todos')  # default = Todos
     entrega_filtro = request.GET.get('entrega', 'Todos')
     peluches = Peluche.objects.all()
+    query = request.GET.get('q')
 
     # filtro por estado
     if estado_filtro != 'Todos':
@@ -63,12 +81,19 @@ def peluches_list(request):
 
     # Para llenar el dropdown de filtros
     estados = ['Todos'] + [choice[0] for choice in Peluche.ESTADO_REVISION]
+
+    #Filtrar por búsqueda
+    if query and query.strip() != "":  
+        peluches = peluches.filter(
+            Q(nombre__icontains=query) | Q(categoria__categoria__icontains=query)
+        )
     
     context = {
         'peluches': peluches,
         'estados': estados,
         'estado_seleccionado': estado_filtro,
         'entrega_seleccionado': entrega_filtro,
+        'query': query,
     }
     return render(request, 'admin_peluches/peluches_list.html', context)
 
@@ -81,13 +106,13 @@ def peluchesAdd(request):
         nombre=request.POST["nombre"]
         categoria = request.POST["categoria"]
         precio = request.POST.get("precio")
+        precio = int(precio.replace(".", "")) if precio else None
         descripcion = request.POST.get("descripcion")
         estado = request.POST.get("estado_revision")
         imagenes = request.FILES.getlist("imagen")
         fecha_entrega = request.POST.get("fecha_entrega")
         lugar_entrega = request.POST.get("lugar_entrega")
         objCategoria= Categoria.objects.get(id_categoria= categoria)
-
 
         obj= Peluche.objects.create(
             nombre=nombre, 
@@ -96,14 +121,16 @@ def peluchesAdd(request):
             descripcion=descripcion, 
             estado_revision=estado)
         
-        # 🆕 lógica de entrega
+        # 🆕 lógica de venta
         if estado == "Vendido":
+            obj.fecha_venta = timezone.now()
             if fecha_entrega:
                 obj.fecha_entrega = parse_datetime(fecha_entrega)
             obj.lugar_entrega = lugar_entrega
             obj.entregado = False  # queda pendiente
         else:
             # limpiar si no está vendido
+            obj.fecha_venta = None
             obj.fecha_entrega = None
             obj.lugar_entrega = None
             obj.entregado = False
@@ -116,7 +143,9 @@ def peluchesAdd(request):
                 imagen=img
             )
         
-        context={'mensaje':"Ok, datos grabados"}
+        context = {
+            'mensaje': "Ok, datos grabados"
+        }
         return render(request, 'admin_peluches/peluches_add.html', context)
 
 def peluches_del(request,pk):
@@ -162,6 +191,7 @@ def peluchesUpdate(request):
         nombre = request.POST["nombre"]
         categoria = request.POST["categoria"]
         precio = request.POST.get("precio")
+        precio = int(precio.replace(".", "")) if precio else None
         descripcion = request.POST.get("descripcion")
         estado = request.POST.get("estado_revision")
         imagenes = request.FILES.getlist("imagenes")
@@ -175,6 +205,11 @@ def peluchesUpdate(request):
         peluche.categoria = objCategoria
         peluche.precio=precio
         peluche.descripcion=descripcion
+
+        # 🆕 detectar cambio a vendido
+        if estado == "Vendido" and peluche.estado_revision != "Vendido":
+            peluche.fecha_venta = timezone.now()
+
         peluche.estado_revision=estado
 
         # 🆕 lógica de entrega
@@ -187,14 +222,13 @@ def peluchesUpdate(request):
             # limpiar si no está vendido
             peluche.fecha_entrega = None
             peluche.lugar_entrega = None
-            peluche.entregado = False
+            peluche.entregado = False   
 
         peluche.save()
 
         for img in imagenes:
             PelucheImagen.objects.create(peluche=peluche, imagen=img)
 
-        categorias = Categoria.objects.all()
         return redirect('peluche', id_peluche=peluche.id_peluche)
 
 def peluche_imagen_del(request, id):
@@ -251,3 +285,58 @@ def marcar_entregado(request, id):
     peluche.save()
 
     return redirect('calendario')
+
+#--Ventas--
+def ventas_reporte(request):
+    hoy = timezone.localdate()
+    periodo = request.GET.get('periodo', 'dia')
+
+    ventas_qs = Peluche.objects.filter(
+        estado_revision='Vendido',
+        fecha_venta__isnull=False
+    )
+
+    # -------------------
+    # FILTROS CORRECTOS
+    # -------------------
+
+    if periodo == 'dia':
+        ventas_qs = ventas_qs.filter(
+            fecha_venta__date=hoy
+        )
+
+    elif periodo == 'semana':
+        inicio = hoy - timedelta(days=hoy.weekday())  # lunes
+        fin = inicio + timedelta(days=6)  # domingo
+
+        ventas_qs = ventas_qs.filter(
+            fecha_venta__date__gte=inicio,
+            fecha_venta__date__lte=fin
+        )
+
+    elif periodo == 'mes':
+        inicio = hoy.replace(day=1)
+
+        # siguiente mes menos 1 día
+        if hoy.month == 12:
+            fin = hoy.replace(year=hoy.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            fin = hoy.replace(month=hoy.month + 1, day=1) - timedelta(days=1)
+
+        ventas_qs = ventas_qs.filter(
+            fecha_venta__date__gte=inicio,
+            fecha_venta__date__lte=fin
+        )
+
+    elif periodo == 'todos':
+        pass  # sin filtro adicional
+    
+    total_ganado = ventas_qs.aggregate(total=Sum('precio'))['total'] or 0
+    context = {
+        'ventas': ventas_qs,
+        'total': ventas_qs.count(),
+        'total_ganado': total_ganado,
+        'periodo': periodo,
+    }
+
+    return render(request, 'admin_peluches/ventas_reporte.html', context)

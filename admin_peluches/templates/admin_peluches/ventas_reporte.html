@@ -1,0 +1,51 @@
+{% extends "admin_peluches/base.html" %}
+
+{% block body %}
+
+    <div class="container mt-4">
+
+        <h3>Reporte de Ventas ({{ periodo|capfirst }})</h3>
+
+        <!-- Filtros -->
+        <div class="mb-3">
+            <a href="?periodo=dia" class="btn btn-sm btn-primary">Día</a>
+            <a href="?periodo=semana" class="btn btn-sm btn-secondary">Semana</a>
+            <a href="?periodo=mes" class="btn btn-sm btn-success">Mes</a>
+            <a href="?periodo=todos" class="btn btn-sm btn-dark">Todos</a>
+        </div>
+
+        <div class="alert alert-info">
+            Total ventas: <strong>{{ total }}</strong>
+            Total ganado: <strong>${{ total_ganado|clp }}</strong>
+        </div>
+
+        <!-- Tabla -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Peluche</th>
+                    <th>Fecha venta</th>
+                    <th>Estado entrega</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in ventas %}
+                <tr>
+                    <td>{{ v.nombre }}</td>
+                    <td>{{ v.fecha_venta }}</td>
+                    <td>
+                        {% if v.entregado %}
+                            <span class="badge bg-success">Entregado</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>${{ v.precio|clp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

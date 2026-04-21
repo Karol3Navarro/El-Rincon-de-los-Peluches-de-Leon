@@ -23,7 +23,7 @@
         {% if peluches %}
             <div class="productos-contenedor">
                 {% for x in peluches %}
-                    <div class="card position-relative" style="width: 18rem;">
+                    <div class="card card-product position-relative">
                         <!-- Etiquetas -->
                         <div class="d-flex gap-1 position-absolute top-0 start-0 m-2">
                             {% if x.estado_revision == 'Publicado' %}
@@ -47,8 +47,8 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ x.nombre }}</h5>
                             <p class="card-text">{{ x.categoria }}</p>
-                            <p class="card-text">{{ x.precio }}</p>
-                            <a href="{% url 'peluche' id_peluche=x.id_peluche %}" class="btn btn-primary">Ver Peluche</a>
+                            <p class="card-text precio">${{ x.precio|clp }}</p>
+                            <a href="{% url 'peluche' id_peluche=x.id_peluche %}" class="btn btn-sm btn-custom">Ver Peluche</a>
                         </div>
                     </div>
                 {% endfor %}

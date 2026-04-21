@@ -38,9 +38,9 @@
                             <img src="{{ x.imagenes.all.0.imagen.url }}" class="img-fluid">
                         {% endif %}
                         <div class="card-body">
-                            <h5 class="card-title">{{ x.nombre }}</h5>
-                            <p class="price card-text">{{ x.categoria }}</p>
-                            <p class="price card-text">${{ x.precio }}</p>
+                            <h5 class="card-title recorte">{{ x.nombre }}</h5>
+                            <p class="card-text">{{ x.categoria }}</p>
+                            <p class="card-text precio">${{ x.precio|clp }}</p>
                             <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-primary">Ver Peluche</a>
                         </div>
                     </div>

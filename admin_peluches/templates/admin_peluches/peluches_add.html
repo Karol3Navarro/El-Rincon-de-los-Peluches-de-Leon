@@ -1,47 +1,64 @@
 {% extends "admin_peluches/base.html" %}
 {% load static %}
 {% block body %}
-    <div style="text-align: center;">
-        <h2>Formulario</h2>
+    <div class="container py-4">
+        <h2 class="text-center mb-4">Formulario</h2>
         <form action="peluchesAdd" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <pre>Nombre: <input type="text" name="nombre"></pre>
-            <pre>Categoria: 
-                <select name="categoria">
-                    {% for categoria in categorias %}
-                        <option value="{{categoria.id_categoria}}">{{categoria.categoria}}</option>
-                    {% endfor %}
-                </select>
-            </pre>
-            <pre>Precio: <input type="number" name="precio"></pre>
-            <pre>Descripción: <textarea name="descripcion" rows="4" cols="30"></textarea></pre>
-            <pre>Estado:
-                <select name="estado_revision" id="estado_revision">
-                    {% for value, label in estado_choices %}
-                        <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </pre>
-            <!-- 🆕 CAMPOS DE ENTREGA -->
-            <div id="campos_entrega" style="display:none;">
-                <pre>Fecha y hora entrega:
-                    <input type="datetime-local" name="fecha_entrega"
-                    value="{{ peluche.fecha_entrega|date:'Y-m-d\\TH:i' }}">
-                </pre>
-                <pre>Lugar entrega:
-                    <input type="text" name="lugar_entrega" value="{{ peluche.lugar_entrega }}">
-                </pre>
+            <div class="row">
+                <!-- Izquierda -->
+                <div class="col-md-5 mb-3">
+                    <div class="image-preview-box">
+                        <h5>Imágenes</h5>
+                        <div class="image-upload-box">
+                            <input type="file" name="imagen" id="imagenesInput" multiple class="image-input">
+                            <!-- Placeholder -->
+                            <div id="placeholder" class="preview-placeholder">
+                                📷 Arrastra o selecciona imágenes
+                            </div>
+                            <!-- Preview -->
+                            <div id="preview" class="preview-grid"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Derecha -->
+                <div class="col-md-7">
+                    <div class="form-box">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" class="form-control mb-2">
+                        <label>Categoría</label>
+                        <select name="categoria" class="form-select mb-2">
+                            {% for categoria in categorias %}
+                                <option value="{{categoria.id_categoria}}">
+                                    {{categoria.categoria}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <label>Precio</label>
+                        <input type="text" name="precio" class="form-control mb-2">
+                        <label>Descripción</label>
+                        <textarea name="descripcion" rows="4" class="form-control mb-2"></textarea>
+                        <label>Estado</label>
+                        <select name="estado_revision" id="estado_revision" class="form-select mb-2">
+                            {% for value, label in estado_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <!-- ENTREGA -->
+                        <div id="campos_entrega" style="display:none;">
+                            <label>Fecha entrega</label>
+                            <input type="datetime-local" name="fecha_entrega" class="form-control mb-2">
+                            <label>Lugar entrega</label>
+                            <input type="text" name="lugar_entrega" class="form-control mb-2">
+                        </div>
+                        <button type="submit" name="opcion" value="Agregar" class="btn btn-custom mt-3">
+                            Agregar Peluche
+                        </button>
+                        <a href="{% url 'peluches_list' %}" class="d-block mt-3">⬅ Volver</a>
+                    </div>
+                </div>
             </div>
-            <pre>Imagenes: <input type="file" name="imagen" id="imagenesInput" multiple required></pre>
-
-            <h4>Previsualización de imágenes</h4>
-            <div id="preview" style="margin:10px;"></div>
-
-            <input type="submit" name="opcion" value="Agregar" class="btn btn-primary">
         </form>
-
-        <a href="{% url 'peluches' %}">⬅ Volver</a>
-
     </div>
 
     <div id="idMensajes">

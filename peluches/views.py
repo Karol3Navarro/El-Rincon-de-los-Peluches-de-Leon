@@ -10,8 +10,7 @@ def index(request):
     return render(request, 'peluches/index.html', context)
 
 def peluches(request):
-    # peluches = Peluche.objects.filter(estado_revision='Publicado')
-    peluches= Peluche.objects.all()
+    peluches = Peluche.objects.filter(estado_revision__in=['Publicado', 'Vendido'])
 
     # Obtener filtros desde GET
     categoria_id = request.GET.get('categoria')

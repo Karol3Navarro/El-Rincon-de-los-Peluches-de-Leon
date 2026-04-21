@@ -5,9 +5,9 @@
     <div class="row mt-4">
         <div class="col-md-3">
             <a href="{% url 'peluches_list' %}?estado=Publicado" style="text-decoration: none;">
-                <div class="card text-white bg-success mb-3">
+                <div class="card admin-card card-publicados mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Peluches Publicados</h5>
+                        <h5 class="card-title">🧸 Peluches Publicados</h5>
                         <p class="card-text fs-3">{{ total_publicados }}</p>
                     </div>
                 </div>
@@ -16,9 +16,9 @@
         
         <div class="col-md-3">
             <a href="{% url 'peluches_list' %}?estado=Vendido&entrega=entregado" style="text-decoration: none;">
-                <div class="card text-white bg-danger mb-3">
+                <div class="card admin-card card-vendidos mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Peluches Vendidos</h5>
+                        <h5 class="card-title">🧸💰 Peluches Vendidos</h5>
                         <p class="card-text fs-3">{{ total_vendidos }}</p>
                     </div>
                 </div>
@@ -26,19 +26,21 @@
         </div>
         
         <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Ventas del Día</h5>
-                    <p class="card-text fs-3">{{ ventas_dia }}</p>
+            <a href="{% url 'ventas_reporte' %}" style="text-decoration: none;">
+                <div class="card admin-card card-ventas mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">💰 Ventas del Día</h5>
+                        <p class="card-text fs-3">{{ ventas_dia }}</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-md-3">
             <a href="{% url 'peluches_list' %}?estado=Vendido&entrega=pendiente" style="text-decoration: none;">
-                <div class="card text-white bg-warning mb-3">
+                <div class="card admin-card card-entregas mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Entregas Pendientes</h5>
+                        <h5 class="card-title">🚇 Entregas Pendientes</h5>
                         <p class="card-text fs-3">{{ entregas_pendientes }}</p>
                     </div>
                 </div>

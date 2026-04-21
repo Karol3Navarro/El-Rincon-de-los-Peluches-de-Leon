@@ -1,24 +1,51 @@
 {% extends "admin_peluches/base.html" %}
 {% load static %}
 {% block body %}
-    <div style="text-align: center;">
-        <h2>Formulario</h2>
-        <form action="categoriaAdd" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <pre>Categoria: <input type="text" name="categoria"></pre>
-            <input type="submit" name="opcion" value="Agregar" class="btn btn-primary">
-        </form>
+    <div class="container py-4">
+        <h2 class="text-center mb-4">Gestión de Categorías</h2>
+        <div class="row">
+            <!-- IZQUIERDA: LISTADO -->
+            <div class="col-md-6 mb-3">
+                <div class="form-box">
+                    <h5 class="mb-3">Categorías existentes</h5>
+                    {% if categorias %}
+                        <div class="list-group">
+                            {% for c in categorias %}
+                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                    <span>{{ c.categoria }}</span>
+                                    <a href="{% url 'categoria_delete' c.id_categoria %}" onclick="return confirm('¿Eliminar categoría?')" class="btn btn-sm btn-danger">
+                                        ✕
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hay categorías registradas</p>
+                    {% endif %}
+                </div>
+            </div>
 
-        <a href="{% url 'peluches' %}">⬅ Volver</a>
+            <!-- DERECHA: FORMULARIO -->
+            <div class="col-md-6">
+                <div class="form-box">
+                    <h5 class="mb-3">Agregar categoría</h5>
+                    <form action="{% url 'categoriaAdd' %}" method="POST">
+                        {% csrf_token %}
+                        <label>Nombre de categoría</label>
+                        <input type="text" name="categoria" class="form-control mb-3">
 
+                        <button type="submit" name="opcion" value="Agregar" class="btn btn-custom w-100">
+                            Agregar categoría
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div id="idMensajes">
+    <!-- MENSAJES -->
+    <div id="idMensajes" class="text-center mt-3">
         {% if mensaje %}
             {{ mensaje }}
         {% endif %}
     </div>
-    {% block extra_js %}
-        <script src="{% static 'js/scripts_admin.js' %}"></script>
-    {% endblock %}
 {% endblock %}
