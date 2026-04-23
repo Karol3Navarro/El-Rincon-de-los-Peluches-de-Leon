@@ -1,5 +1,7 @@
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Categoria, Peluche, PelucheImagen
+from .models import Categoria, Peluche, PelucheImagen, Configuracion
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os
@@ -8,9 +10,73 @@ from datetime import timedelta
 from django.db.models import Count, Sum, Q
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.core.paginator import Paginator
+from .forms import UserUpdateForm, ConfiguracionForm
 
 # Create your views here.
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # tu vista principal
+        else:
+            return render(request, 'admin_peluches/login.html', {
+                'error': 'Usuario o contraseña incorrectos'
+            })
+
+    return render(request, 'admin_peluches/login.html')
+@require_POST
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required
+def perfil_view(request):
+    user = request.user
+    config = Configuracion.objects.first()
+
+    if request.method == 'POST':
+
+        user_form = UserUpdateForm(request.POST, instance=user)
+        config_form = ConfiguracionForm(request.POST, instance=config)
+        password_form = PasswordChangeForm(user, request.POST)
+
+        if "update_profile" in request.POST:
+            if user_form.is_valid() and config_form.is_valid():
+                user_form.save()
+                config_form.save()
+                messages.success(request, "Perfil actualizado ✅")
+                return redirect('perfil')
+
+        elif "change_password" in request.POST:
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)  # evita logout
+                messages.success(request, "Contraseña actualizada 🔒")
+                return redirect('perfil')
+
+    else:
+        user_form = UserUpdateForm(instance=user)
+        config_form = ConfiguracionForm(instance=config)
+        password_form = PasswordChangeForm(user)
+
+    return render(request, 'admin_peluches/perfil.html', {
+        'user_form': user_form,
+        'config': config,
+        'config_form': config_form,
+        'password_form': password_form
+    })
+
+@login_required
 def home(request):
     # Total de peluches por estado
     total_publicados = Peluche.objects.filter(estado_revision='Publicado').count()
@@ -36,6 +102,7 @@ def home(request):
     return render(request, 'admin_peluches/home.html', context)
 
 #---Categoria
+@login_required
 def categoriaAdd(request):
     if request.method != "POST":
         categorias = Categoria.objects.all()
@@ -49,54 +116,106 @@ def categoriaAdd(request):
         categorias = Categoria.objects.all()  # 👈 RECARGAR LISTA
 
         context = {
-            'categorias': categorias,
-            'mensaje': "Ok, categoría grabada"
+            'categorias': categorias
         }
 
         return render(request, 'admin_peluches/categoria_add.html', context)
-
+@login_required
 def categoria_delete(request, pk):
     categoria = get_object_or_404(Categoria, id_categoria=pk)
     categoria.delete()
     return redirect('categoriaAdd')
 
 #----Peluches----
+@login_required
 def peluches_list(request):
     # Obtener filtro desde GET
     estado_filtro = request.GET.get('estado', 'Todos')  # default = Todos
     entrega_filtro = request.GET.get('entrega', 'Todos')
-    peluches = Peluche.objects.all()
+    tamano = request.GET.get('tamano')
+    min_cm = request.GET.get('min_cm') or None
+    max_cm = request.GET.get('max_cm') or None
+
+    categoria_id = request.GET.getlist('categoria')
+    precio_min = request.GET.get('precio_min')
+    precio_max = request.GET.get('precio_max')
+    
     query = request.GET.get('q')
 
-    # filtro por estado
+    peluches = Peluche.objects.all()
+
+    # filtro por estado_filtro
     if estado_filtro != 'Todos':
         peluches = peluches.filter(estado_revision=estado_filtro)
     
-    # filtro por entrega (solo aplica si está vendido normalmente)
+    # filtro por entrega
     if entrega_filtro == 'pendiente':
         peluches = peluches.filter(entregado=False, estado_revision='Vendido')
 
     elif entrega_filtro == 'entregado':
         peluches = peluches.filter(entregado=True, estado_revision='Vendido')
 
-    # Para llenar el dropdown de filtros
-    estados = ['Todos'] + [choice[0] for choice in Peluche.ESTADO_REVISION]
+    # Filtro por tamaño
+    if tamano:
+        peluches = peluches.filter(tamano=tamano)
+
+    # 🔹 rango (alto en cm)
+    if min_cm is not None and min_cm != "":
+        min_cm = int(min_cm)
+        peluches = peluches.filter(alto_cm__gte=min_cm)
+
+    if max_cm is not None and max_cm != "":
+        max_cm = int(max_cm)
+        peluches = peluches.filter(alto_cm__lte=max_cm)
+
+    #Categoria
+    if categoria_id:
+        peluches = peluches.filter(categoria_id__in=categoria_id)
+
+    # PRECIO 🔥 NUEVO
+    if precio_min:
+        try:
+            peluches = peluches.filter(precio__gte=int(precio_min.replace(".", "")))
+        except ValueError:
+            pass
+    if precio_max:
+        try:
+            peluches = peluches.filter(precio__lte=int(precio_max.replace(".", "")))
+        except ValueError:
+            pass
 
     #Filtrar por búsqueda
     if query and query.strip() != "":  
         peluches = peluches.filter(
             Q(nombre__icontains=query) | Q(categoria__categoria__icontains=query)
         )
+
+    # 🔥 PAGINACIÓN
+    paginator = Paginator(peluches, 16)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
+    # Para llenar el dropdown de filtros
+    estados = ['Todos'] + [choice[0] for choice in Peluche.ESTADO_REVISION]
+
     context = {
-        'peluches': peluches,
-        'estados': estados,
+        'peluches': page_obj,
+        'page_obj': page_obj,
+        'tamanos': Peluche.TAMANOS,
+        'tamano_seleccionado': tamano,
         'estado_seleccionado': estado_filtro,
         'entrega_seleccionado': entrega_filtro,
+        'min_cm': min_cm or '',
+        'max_cm': max_cm or '',
+        'categorias': Categoria.objects.all(),
+        'filtro_categoria': categoria_id,
+        'precio_min': precio_min or '',
+        'precio_max': precio_max or '',
         'query': query,
     }
     return render(request, 'admin_peluches/peluches_list.html', context)
 
+@login_required
 def peluchesAdd(request):
     if request.method != "POST":
         categorias=Categoria.objects.all()
@@ -112,6 +231,10 @@ def peluchesAdd(request):
         imagenes = request.FILES.getlist("imagen")
         fecha_entrega = request.POST.get("fecha_entrega")
         lugar_entrega = request.POST.get("lugar_entrega")
+        alto_cm = request.POST.get('alto_cm')   
+        ancho_cm = request.POST.get('ancho_cm')
+        alto_cm = int(alto_cm) if alto_cm else None
+        ancho_cm = int(ancho_cm) if ancho_cm else None
         objCategoria= Categoria.objects.get(id_categoria= categoria)
 
         obj= Peluche.objects.create(
@@ -119,7 +242,9 @@ def peluchesAdd(request):
             categoria=objCategoria, 
             precio=precio, 
             descripcion=descripcion, 
-            estado_revision=estado)
+            estado_revision=estado,
+            alto_cm=alto_cm or None,
+            ancho_cm=ancho_cm or None)
         
         # 🆕 lógica de venta
         if estado == "Vendido":
@@ -142,35 +267,33 @@ def peluchesAdd(request):
                 peluche=obj,
                 imagen=img
             )
-        
-        context = {
-            'mensaje': "Ok, datos grabados"
-        }
-        return render(request, 'admin_peluches/peluches_add.html', context)
 
+        return render(request, 'admin_peluches/peluches_add.html')
+
+@login_required
 def peluches_del(request,pk):
     context={}
     try:
         peluche= Peluche.objects.get(id_peluche=pk)
 
         peluche.delete()
-        mensaje="Bien, datos eliminados"
         peluches = Peluche.objects.all()
-        context = {'peluches' : peluches, 'mensaje':mensaje}
+        context = {'peluches' : peluches}
         return render(request, 'admin_peluches/peluches_list.html', context)
     except:
-        mensaje="Error, Peluche no existe"
         peluches = Peluche.objects.all()
-        context= {'peluches': peluches, 'mensaje':mensaje}
+        context= {'peluches': peluches}
         return render(request, 'admin_peluches/peluches_list.html', context)
 
 #Eliminar Imagenes de Media/Peluches
+@login_required
 @receiver(post_delete, sender=PelucheImagen)
 def eliminar_imagen(sender, instance, **kwargs):
     if instance.imagen:
         if os.path.isfile(instance.imagen.path):
             os.remove(instance.imagen.path)
 
+@login_required
 def peluches_findEdit(request, pk):
     if pk != "":
         peluche= Peluche.objects.get(id_peluche=pk)
@@ -182,9 +305,8 @@ def peluches_findEdit(request, pk):
         if peluche:
             return render(request, 'admin_peluches/peluches_edit.html', context)
         else:
-            context={'mensaje':"Error, peluche no existe"}
-            return render(request, 'admin_peluches/peluches_list.html', context)
-
+            return render(request, 'admin_peluches/peluches_list.html')
+@login_required
 def peluchesUpdate(request):
     if request.method == "POST":
         id_peluche = request.POST.get("id_peluche")
@@ -197,6 +319,10 @@ def peluchesUpdate(request):
         imagenes = request.FILES.getlist("imagenes")
         fecha_entrega = request.POST.get("fecha_entrega")
         lugar_entrega = request.POST.get("lugar_entrega")
+        alto_cm = request.POST.get('alto_cm')   
+        ancho_cm = request.POST.get('ancho_cm')
+        alto_cm = int(alto_cm) if alto_cm else None
+        ancho_cm = int(ancho_cm) if ancho_cm else None
 
         objCategoria = Categoria.objects.get(id_categoria=categoria)
         peluche = Peluche.objects.get(id_peluche=id_peluche)
@@ -205,6 +331,8 @@ def peluchesUpdate(request):
         peluche.categoria = objCategoria
         peluche.precio=precio
         peluche.descripcion=descripcion
+        peluche.alto_cm= alto_cm
+        peluche.ancho_cm= ancho_cm
 
         # 🆕 detectar cambio a vendido
         if estado == "Vendido" and peluche.estado_revision != "Vendido":
@@ -230,7 +358,7 @@ def peluchesUpdate(request):
             PelucheImagen.objects.create(peluche=peluche, imagen=img)
 
         return redirect('peluche', id_peluche=peluche.id_peluche)
-
+@login_required
 def peluche_imagen_del(request, id):
     img = PelucheImagen.objects.get(id=id)
 
@@ -243,7 +371,7 @@ def peluche_imagen_del(request, id):
     img.delete()
 
     return redirect('peluches_findEdit', pk=peluche_id)
-
+@login_required
 def peluche(request, id_peluche):
     peluche = get_object_or_404(Peluche, id_peluche=id_peluche)
 
@@ -255,6 +383,7 @@ def peluche(request, id_peluche):
     return render(request, 'admin_peluches/peluche.html', context)
 
 #---Calendario
+@login_required
 def eventos_entrega(request):
     peluches = Peluche.objects.filter(fecha_entrega__isnull=False, entregado=False)
 
@@ -276,9 +405,11 @@ def eventos_entrega(request):
 
     return JsonResponse(eventos, safe=False)
 
+@login_required
 def calendario(request):
     return render(request, 'admin_peluches/calendario.html')
 
+@login_required
 def marcar_entregado(request, id):
     peluche = Peluche.objects.get(id_peluche=id)
     peluche.entregado = True
@@ -287,6 +418,7 @@ def marcar_entregado(request, id):
     return redirect('calendario')
 
 #--Ventas--
+@login_required
 def ventas_reporte(request):
     hoy = timezone.localdate()
     periodo = request.GET.get('periodo', 'dia')
@@ -295,10 +427,6 @@ def ventas_reporte(request):
         estado_revision='Vendido',
         fecha_venta__isnull=False
     )
-
-    # -------------------
-    # FILTROS CORRECTOS
-    # -------------------
 
     if periodo == 'dia':
         ventas_qs = ventas_qs.filter(

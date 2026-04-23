@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Iniciar sesión</title>
+        <link rel="stylesheet" href='{% static "css/style_admin.css"%}' rel='stylesheet'>
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/Logo.png' %}">
+        <link rel="apple-touch-icon" href="{% static 'img/Logo.png' %}">
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Open+Sans&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="login-container">
+            <div class="login-card form-box">
+                <div class="login-title">
+                    <div class="logo-box">
+                        <img src="{% static 'img/Logo.png' %}" alt="Logo">
+                    </div>
+                    <p>Inicia sesión para continuar</p>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                        {% if error %}
+                            <div class="error-box">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                        <input type="text" name="username" placeholder="Usuario" required>
+                        <input type="password" name="password" placeholder="Contraseña" required>
+                        <button type="submit" class="btn-login w-100">
+                            Ingresar
+                        </button>
+                </form>
+                <div class="login-footer">
+                    Panel de administración
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

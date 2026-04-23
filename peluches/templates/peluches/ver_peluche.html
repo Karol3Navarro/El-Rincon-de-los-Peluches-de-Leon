@@ -36,6 +36,8 @@
                     <p><strong>Categoría:</strong> {{ peluche.categoria }}</p>
                     <p class="precio">${{ peluche.precio|clp }}</p>
                     <p class="descripcion">{{ peluche.descripcion }}</p>
+                    <p class="card-text"><strong>Alto x Ancho: </strong>{{ peluche.alto_cm }} x {{ peluche.ancho_cm }} cm</p>
+                    <p class="card-text"><strong>Tamaño: </strong>{{ peluche.tamano }}</p>
                     {% if peluche.estado_revision != 'Vendido' %}
                         <a href="https://wa.me/{{ telefono_whatsapp }}?text={{ mensaje|urlencode }}" target="_blank" class="btn btn-whatsapp mt-2">
                             WhatsApp
@@ -62,7 +64,7 @@
                                     <img src="{{ x.imagenes.first.imagen.url }}" class="card-img-top">
                                 {% endif %}
                                 <div class="card-body">
-                                    <h5 class="card-title recorte">{{ x.nombre }}</h5>
+                                    <h5 class="card-title recorte">{{ x.nombre }}</h5>  
                                     <p class="card-text">{{ x.categoria }}</p>
                                     <p class="card-text precio">${{ x.precio|clp }}</p>
                                     <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}"class="btn btn-primary-custom btn-sm">

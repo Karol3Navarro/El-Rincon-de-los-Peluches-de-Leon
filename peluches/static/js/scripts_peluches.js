@@ -39,3 +39,31 @@ document.addEventListener("DOMContentLoaded", function(){
         },
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("verMasCategorias");
+    if (!btn) return;
+
+    const items = document.querySelectorAll(".categoria-item");
+    const STORAGE_KEY = "categorias_expandidas";
+
+    let expanded = localStorage.getItem(STORAGE_KEY) === "true";
+
+    function applyState() {
+        items.forEach((el, index) => {
+            if (index >= 3) {
+                el.classList.toggle("hidden-cat", !expanded);
+            }
+        });
+
+        btn.textContent = expanded ? "Ver menos" : "Ver más";
+    }
+
+    applyState();
+
+    btn.addEventListener("click", function () {
+        expanded = !expanded;
+        localStorage.setItem(STORAGE_KEY, expanded);
+        applyState();
+    });
+});

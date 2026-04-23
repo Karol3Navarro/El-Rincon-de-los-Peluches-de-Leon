@@ -15,6 +15,11 @@ class Peluche(models.Model):
         ('Publicado', 'Publicado'),
         ('Vendido', 'Vendido'),
     ]
+    TAMANOS = [
+        ('Pequeño', 'Pequeño'),
+        ('Mediano', 'Mediano'),
+        ('Grande', 'Grande'),
+    ]
 
     id_peluche = models.AutoField(db_column='idPeluche', primary_key=True)
     nombre = models.CharField(max_length=20, blank=False, null=False)
@@ -26,7 +31,21 @@ class Peluche(models.Model):
     fecha_venta = models.DateTimeField(null=True, blank=True)
     lugar_entrega = models.CharField(max_length=255, null=True, blank=True)
     entregado = models.BooleanField(default=False)
+    alto_cm = models.PositiveIntegerField(null=True, blank=True)
+    ancho_cm = models.PositiveIntegerField(null=True, blank=True)
+    tamano = models.CharField(max_length=10, choices=TAMANOS, default='Mediano')
     
+    def save(self, *args, **kwargs):
+        # 👇 lógica automática
+        if self.alto_cm:
+            if self.alto_cm <= 20:
+                self.tamano = 'Pequeño'
+            elif self.alto_cm <= 40:
+                self.tamano = 'Mediano'
+            else:
+                self.tamano = 'Grande'
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return str(self.nombre)
 

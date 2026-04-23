@@ -1,9 +1,3 @@
-
-$(document).ready(function() {
-    // Mensajes que desaparecen automáticamente
-    $("#idMensajes").delay(2000).fadeOut("slow");
-});
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const estado = document.getElementById("estado_revision");
@@ -26,9 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!calendarEl) return; // evita errores en otras páginas
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
         locale: 'es',
-
+        firstDay: 1,
+        initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
+        weekNumbers: false,
         height: 'auto',
 
         headerToolbar: {
@@ -59,6 +54,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById("formEntregado");
             if (form) {
                 form.action = `/admin_peluches/entregado/${id}/`;
+            }
+
+            const btnVer = document.getElementById("btnVerPeluche");
+            if (btnVer) {
+                btnVer.href = `/admin_peluches/peluche/${id}/`;
             }
 
             const modal = new bootstrap.Modal(document.getElementById('eventoModal'));
@@ -183,5 +183,86 @@ document.addEventListener("DOMContentLoaded", function () {
     // Antes de enviar → quitar puntos
     precioInput.form.addEventListener("submit", function () {
         precioInput.value = precioInput.value.replace(/\./g, "");
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalEl = document.getElementById("pelucheModal");
+    if (!modalEl) return;
+
+    // 🔥 UNA sola instancia
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    document.querySelectorAll(".fila-peluche").forEach(fila => {
+        console.log("Js Funcionando")
+        fila.addEventListener("click", function () {
+
+            document.getElementById("modalNombre").innerText = this.dataset.nombre;
+            document.getElementById("modalFecha").innerText = this.dataset.fecha;
+
+            document.getElementById("modalEstado").innerText =
+                this.dataset.entregado === "True" ? "Entregado" : "Pendiente";
+
+            document.getElementById("modalPrecio").innerText = this.dataset.precio;
+
+            // 🖼️ Imagen
+            const img = document.getElementById("modalImagen");
+            if (this.dataset.imagen) {
+                img.src = this.dataset.imagen;
+                img.style.display = "block";
+            } else {
+                img.style.display = "none";
+            }
+
+            // 🔗 Botón ver peluche
+            const btn = document.getElementById("btnVerPeluche");
+            btn.href = `/admin_peluches/peluche/${this.dataset.id}/`;
+
+            // 🔥 reutiliza el modal
+            modal.show();
+        });
+    });
+
+});
+
+document.addEventListener('hidden.bs.modal', function (event) {
+
+    // 🔥 Quita el foco del elemento activo (ej: botón cerrar)
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
+
+    // 🔥 Limpieza por si Bootstrap deja basura
+    document.body.classList.remove('modal-open');
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("verMasCategorias");
+    if (!btn) return;
+
+    const items = document.querySelectorAll(".categoria-item");
+    const STORAGE_KEY = "categorias_expandidas";
+
+    let expanded = localStorage.getItem(STORAGE_KEY) === "true";
+
+    function applyState() {
+        items.forEach((el, index) => {
+            if (index >= 3) {
+                el.classList.toggle("hidden-cat", !expanded);
+            }
+        });
+
+        btn.textContent = expanded ? "Ver menos" : "Ver más";
+    }
+
+    applyState();
+
+    btn.addEventListener("click", function () {
+        expanded = !expanded;
+        localStorage.setItem(STORAGE_KEY, expanded);
+        applyState();
     });
 });

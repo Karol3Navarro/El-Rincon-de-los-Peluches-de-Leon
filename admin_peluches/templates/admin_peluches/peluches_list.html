@@ -1,63 +1,135 @@
 {% extends "admin_peluches/base.html" %}
 {% load static %}
 {% block body %}
-    <h2>Peluches</h2>
+    <div class="layout-peluches">
+        <!-- SIDEBAR FILTROS -->
+        <aside class="filtros-panel">
+            <h4>Filtros 🧸</h4>
+            <form method="get" id="filtroForm" class="filtros-form">
+                <!-- Filtro Categoria -->
+                <label>Categoría</label>
+                <div class="checkbox-group" id="categorias-lista">
+                    {% for cat in categorias|dictsort:"categoria" %}
+                        <div class="form-check categoria-item {% if forloop.counter > 3 %}hidden-cat{% endif %}">
+                            <input class="form-check-input filtro" type="checkbox" name="categoria" value="{{ cat.id_categoria }}" id="cat{{ cat.id_categoria }}"
+                                {% if cat.id_categoria|stringformat:"s" in filtro_categoria %}checked{% endif %}
+                                onchange="this.form.submit()">
+                            <label class="form-check-label" for="cat{{ cat.id_categoria }}">{{ cat.categoria }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Botón ver más -->
+                <button type="button" id="verMasCategorias" class="btn-limpiar">Ver más</button>
 
-    <form method="get" class="mb-3">
-        <label for="estado">Filtrar por estado:</label>
-        <select name="estado" id="estado" onchange="this.form.submit()">
-            {% for estado in estados %}
-                <option value="{{ estado }}" {% if estado == estado_seleccionado %}selected{% endif %}>
-                    {{ estado }}
-                </option>
-            {% endfor %}
-        </select>
-    </form>
+                <!-- Filtro Estado -->
+                <label for="estado">Filtrar por estado:</label>
+                <div class="checkbox-group">
+                    {% for estado in estados %}
+                        <div class="form-check">
+                            <input class="form-check-input filtro"
+                                type="checkbox"
+                                name="estado"
+                                value="{{ estado }}"
+                                id="estado{{ forloop.counter }}"
+                                {% if estado in estado_seleccionado %}checked{% endif %}
+                                onchange="this.form.submit()">
 
-    <div id="idMensaje">
-        {% if mensaje %}
-            {{mensaje}}
-        {% endif %}
-    </div>
-    <div class="coleccion">
-        {% if peluches %}
-            <div class="productos-contenedor">
-                {% for x in peluches %}
-                    <div class="card card-product position-relative">
-                        <!-- Etiquetas -->
-                        <div class="d-flex gap-1 position-absolute top-0 start-0 m-2">
-                            {% if x.estado_revision == 'Publicado' %}
-                                <span class="badge bg-success">Publicado</span>
-                            {% elif x.estado_revision == 'Vendido' %}
-                                <span class="badge bg-danger">Vendido</span>
-                                <!-- Etiquetas Entregado-->
-                                {% if x.entregado %}
-                                    <span class="badge bg-dark">Entregado</span>
-                                {% else %}
-                                    <span class="badge bg-warning text-dark">Sin Entregar</span>
+                            <label class="form-check-label" for="estado{{ forloop.counter }}">
+                                {{ estado }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Filtro Precio -->
+                <label>Precio</label>
+                <input type="number" name="precio_min" placeholder="Mín" value="{{ precio_min }}" class="filtro">
+                <input type="number" name="precio_max" placeholder="Máx" value="{{ precio_max }}" class="filtro">
+
+                <!-- Filtro Tamaño -->
+                <label>Filtrar por tamaño:</label>
+                <div class="checkbox-group">
+                    {% for t in tamanos %}
+                        <div class="form-check">
+                            <input class="form-check-input filtro" type="checkbox" name="tamano" value="{{ t.0 }}" onchange="this.form.submit()"
+                                {% if t.0 in tamano_seleccionado %}checked{% endif %}>
+                            <label class="form-check-label">{{ t.1 }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Filtro Altura/Alto -->
+                <label>Altura (cm)</label>
+                <input type="number" name="min_cm" placeholder="Min cm" class="filtro">
+                <input type="number" name="max_cm" placeholder="Max cm" class="filtro">
+
+                <button type="submit" class="btn-filtrar">Filtrar</button>
+            
+                <a href="{% url 'peluches_list' %}" class="btn-limpiar">Limpiar filtros</a>
+            </form>
+        </aside>
+        <!-- Peluches -->
+        <main class="productos-area">
+            <h2>Peluches</h2>
+            <div class="coleccion">
+                {% if peluches %}
+                    <div class="productos-contenedor">
+                        {% for x in peluches %}
+                            <div class="card card-product position-relative">
+                                <!-- Etiquetas -->
+                                <div class="d-flex gap-1 position-absolute top-0 start-0 m-2">
+                                    {% if x.estado_revision == 'Publicado' %}
+                                        <span class="badge bg-success">Publicado</span>
+                                    {% elif x.estado_revision == 'Vendido' %}
+                                        <span class="badge bg-danger">Vendido</span>
+                                        <!-- Etiquetas Entregado-->
+                                        {% if x.entregado %}
+                                            <span class="badge bg-dark">Entregado</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Sin Entregar</span>
+                                        {% endif %}
+                                    {% elif x.estado_revision == 'Sin Publicar' %}
+                                        <span class="badge bg-secondary">Sin Publicar</span>
+                                    {% endif %}
+                                </div>
+                                <!-- Imagenes -->
+                                {% if x.imagenes.all %}
+                                    <img src="{{ x.imagenes.all.0.imagen.url }}" class="card-img-top">
                                 {% endif %}
-                            {% elif x.estado_revision == 'Sin Publicar' %}
-                                <span class="badge bg-secondary">Sin Publicar</span>
-                            {% endif %}
-                        </div>
-                        <!-- Imagenes -->
-                        {% if x.imagenes.all %}
-                            <img src="{{ x.imagenes.all.0.imagen.url }}" class="card-img-top">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ x.nombre }}</h5>
-                            <p class="card-text">{{ x.categoria }}</p>
-                            <p class="card-text precio">${{ x.precio|clp }}</p>
-                            <a href="{% url 'peluche' id_peluche=x.id_peluche %}" class="btn btn-sm btn-custom">Ver Peluche</a>
-                        </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ x.nombre }}</h5>
+                                    <p class="card-text">{{ x.categoria }}</p>
+                                    <p class="card-text precio">${{ x.precio|clp }}</p>
+                                    <a href="{% url 'peluche' id_peluche=x.id_peluche %}" class="btn btn-sm btn-custom">Ver Peluche</a>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+                {% else %}
+                    <p>No hay peluches para mostrar.</p>
+                {% endif %}
             </div>
-        {% else %}
-            <p>No hay peluches para mostrar.</p>
+        </main>
+        
+    </div>
+    <div class="paginacion">
+        {% if page_obj.has_previous %}
+            <a href="?{{ request.GET.urlencode }}&page=1" class="page-btn">«</a>
+            <a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}" class="page-btn">‹</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span class="page-btn active">{{ num }}</span>
+            {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                <a href="?{{ request.GET.urlencode }}&page={{ num }}" class="page-btn">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}" class="page-btn">›</a>
+            <a href="?{{ request.GET.urlencode }}&page={{ page_obj.paginator.num_pages }}" class="page-btn">»</a>
         {% endif %}
     </div>
-    {% block extra_js %}
-        <script src="{% static 'js/scripts_admin.js' %}"></script>
-    {% endblock %}
+    <!-- Tiene el js de admin block extra_js y endblock -->
 {% endblock %}

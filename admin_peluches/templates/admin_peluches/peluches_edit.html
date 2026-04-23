@@ -58,6 +58,11 @@
                         <label>Descripción</label>
                         <textarea name="descripcion" rows="4" class="form-control mb-2">{{ peluche.descripcion }}</textarea>
 
+                        <label>Altura (cm)</label>
+                        <input type="number" name="alto_cm" value="{{ peluche.alto_cm }}" class="form-control mb-2" min="1">
+                        <label>Ancho (cm)</label>
+                        <input type="number" name="ancho_cm" value="{{ peluche.ancho_cm }}" class="form-control mb-2" min="1">
+
                         <label>Estado</label>
                         <select name="estado_revision" id="estado_revision" class="form-select mb-2">
                             {% for value, label in estado_choices %}
@@ -86,9 +91,6 @@
         </form>
         {% endif %}
     </div>
-
-    {% block extra_js %}
-        <script src="{% static 'js/scripts_admin.js' %}"></script>
-    {% endblock %}
+    <!-- Tiene el js de admin block extra_js y endblock -->
 
 {% endblock %}

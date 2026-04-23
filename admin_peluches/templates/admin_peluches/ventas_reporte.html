@@ -1,24 +1,19 @@
 {% extends "admin_peluches/base.html" %}
-
+{% load static %}
 {% block body %}
-
     <div class="container mt-4">
-
         <h3>Reporte de Ventas ({{ periodo|capfirst }})</h3>
-
         <!-- Filtros -->
         <div class="mb-3">
-            <a href="?periodo=dia" class="btn btn-sm btn-primary">Día</a>
-            <a href="?periodo=semana" class="btn btn-sm btn-secondary">Semana</a>
-            <a href="?periodo=mes" class="btn btn-sm btn-success">Mes</a>
-            <a href="?periodo=todos" class="btn btn-sm btn-dark">Todos</a>
+            <a href="?periodo=dia" class="btn btn-sm btn-dia">Día</a>
+            <a href="?periodo=semana" class="btn btn-sm btn-semana">Semana</a>
+            <a href="?periodo=mes" class="btn btn-sm btn-mes">Mes</a>
+            <a href="?periodo=todos" class="btn btn-sm btn-todos">Todos</a>
         </div>
-
         <div class="alert alert-info">
             Total ventas: <strong>{{ total }}</strong>
             Total ganado: <strong>${{ total_ganado|clp }}</strong>
         </div>
-
         <!-- Tabla -->
         <table class="table table-striped">
             <thead>
@@ -31,21 +26,53 @@
             </thead>
             <tbody>
                 {% for v in ventas %}
-                <tr>
-                    <td>{{ v.nombre }}</td>
-                    <td>{{ v.fecha_venta }}</td>
-                    <td>
-                        {% if v.entregado %}
-                            <span class="badge bg-success">Entregado</span>
-                        {% else %}
-                            <span class="badge bg-warning">Pendiente</span>
-                        {% endif %}
-                    </td>
-                    <td>${{ v.precio|clp }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    <tr class="fila-peluche"
+                        data-id="{{ v.id_peluche }}"
+                        data-nombre="{{ v.nombre }}"
+                        data-fecha="{{ v.fecha_venta }}"
+                        data-entregado="{{ v.entregado }}"
+                        data-precio="{{ v.precio }}"
+                        data-imagen="{% if v.imagenes.first %}{{ v.imagenes.first.imagen.url }}{% endif %}">
 
+                        <td>{{ v.nombre }}</td>
+                        <td>{{ v.fecha_venta }}</td>
+                        <td>
+                            {% if v.entregado %}
+                                <span class="badge bg-success">Entregado</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>${{ v.precio|clp }}</td>
+                    </tr>
+                    {% endfor %}
+            </tbody>
+        </table> 
+        <!-- Modal Peluche -->
+        <div class="modal fade" id="pelucheModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4">
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalNombre"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <!-- BODY -->
+                    <div class="modal-body text-center">
+                        <div class="d-flex justify-content-center mb-3">
+                            <img id="modalImagen" src="" class="rounded shadow-sm" style="max-height: 250px; max-width: 100%; object-fit: contain;">
+                        </div>
+                        <p class="mb-1 fw-bold">📅 <span id="modalFecha"></span></p>
+                        <p class="text-muted mb-1">📦 <span id="modalEstado"></span></p>
+                        <p class="fw-bold">💰 $<span id="modalPrecio"></span></p>
+                    </div>
+                    <!-- FOOTER -->
+                    <div class="modal-footer d-flex gap-2 w-100">
+                        <a id="btnVerPeluche" class="btn btn-primary flex-fill" href="#">Ver Peluche</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- Tiene el js de admin block extra_js y endblock -->
 {% endblock %}

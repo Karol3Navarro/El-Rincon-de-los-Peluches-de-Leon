@@ -1,7 +1,7 @@
 {% extends "admin_peluches/base.html" %}
 {% load static %}
 {% block body %}
-
+    <!-- Calendario -->
     <div class="container py-4">
         <h2 class="text-center mb-4">📅 Calendario de Entregas</h2>
         <!-- CONTENEDOR ESTILIZADO -->
@@ -9,7 +9,6 @@
             <div id="calendar"></div>
         </div>
     </div>
-
     <!-- MODAL -->
     <div class="modal fade" id="eventoModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -23,23 +22,19 @@
                     <p id="modalFecha" class="mb-1 fw-bold"></p>
                     <p id="modalLugar" class="text-muted"></p>
                 </div>
-                <div class="modal-footer">
-                    <form id="formEntregado" method="POST">
+                <div class="modal-footer d-flex gap-2 w-100">
+                    <a id="btnVerPeluche" target="_blank" class="btn btn-primary flex-fill">
+                        Ver Peluche
+                    </a>
+                    <form id="formEntregado" method="POST" class="flex-fill m-0">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success w-100">
                             ✔ Marcar como entregado
                         </button>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- FULLCALENDAR -->
-    {% block extra_js %}
-        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-        <script src="{% static 'js/scripts_admin.js' %}"></script>
-    {% endblock %}
-
 {% endblock %}

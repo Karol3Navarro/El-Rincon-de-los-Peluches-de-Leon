@@ -1,0 +1,62 @@
+{% extends "admin_peluches/base.html" %}
+{% load static %}
+{% block body %}
+    <div class="login-container">
+        <div class="login-card">
+            <div class="form-box">
+                <h2 class="titulo-peluche text-center">Mi Perfil</h2>
+                <!-- INFO SIMPLE -->
+                <div class="admin-card p-3 mt-2">
+                    <p><strong>Usuario:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    {% if config %}
+                        <p><strong>WhatsApp:</strong> +{{ config.telefono_whatsapp }}</p>
+                    {% else %}
+                        <p><strong>WhatsApp:</strong> No configurado</p>
+                    {% endif %}
+                </div>
+                <button class="btn btn-custom w-100" type="button" onclick="toggleEdit()">✏️ Editar perfil</button>
+                <hr>
+                <!-- FORMULARIOS OCULTOS -->
+                <div id="editForms" style="display:none;">
+                    <!-- PERFIL -->
+                    <form method="post">
+                        {% csrf_token %}
+                            <h5>Datos personales</h5>
+                            {{ user_form.username }}
+                            {{ user_form.email }}
+                            {{ config_form.telefono_whatsapp }}
+                            <button type="submit" name="update_profile" class="btn btn-custom w-100 mt-2">Guardar cambios</button>
+                    </form>
+                    <hr>
+                    <!-- PASSWORD -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <h5>Cambiar contraseña</h5>
+                        <div class="mb-2">
+                            <label class="form-label">🔒 Contraseña actual</label>
+                            {{ password_form.old_password }}
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">✨ Nueva contraseña</label>
+                            {{ password_form.new_password1 }}
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">✔ Confirmar contraseña</label>
+                            {{ password_form.new_password2 }}
+                        </div>
+                        <button type="submit" name="change_password" class="btn btn-custom w-100 mt-2">
+                            Cambiar contraseña
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleEdit() {
+            const div = document.getElementById("editForms");
+            div.style.display = div.style.display === "none" ? "block" : "none";
+        }
+    </script>
+{% endblock %}
