@@ -6,7 +6,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os
 from django.utils import timezone
-from datetime import timedelta
+from datetime import date, timedelta, datetime
 from django.db.models import Count, Sum, Q
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.core.paginator import Paginator
 from .forms import UserUpdateForm, ConfiguracionForm
+from django.db.models.functions import TruncDate
 
 # Create your views here.
 def login_view(request):
@@ -84,20 +85,35 @@ def home(request):
     
     # Ventas del día
     hoy = timezone.localdate()
+    mes_actual = hoy.strftime("%Y-%m")
 
-    ventas_dia = Peluche.objects.filter(
-        estado_revision='Vendido',
-        fecha_venta__date=hoy
-    ).count()
+    ventas_dia = Peluche.objects.filter(estado_revision='Vendido',fecha_venta__date=hoy).count()
+    ventas_dia_total = Peluche.objects.filter(estado_revision='Vendido', fecha_venta__date=hoy).aggregate(total=Sum('precio'))['total'] or 0
+
+    inicio_mes = hoy.replace(day=1)
+    ventas_mes = Peluche.objects.filter(estado_revision='Vendido', fecha_venta__isnull=False, fecha_venta__date__gte=inicio_mes, fecha_venta__date__lte=hoy).aggregate(total=Sum('precio'))['total'] or 0
+
+    stock_disponible = Peluche.objects.filter(estado_revision__in=['Publicado', 'Sin Publicar']).count()
     
-    # Entregas pendientes (opcional, necesitas un campo 'entregado' booleano)
     entregas_pendientes = Peluche.objects.filter(estado_revision='Vendido', entregado=False).count() if hasattr(Peluche, 'entregado') else 0
 
+    entregas_atrasadas = Peluche.objects.filter(
+        estado_revision='Vendido',
+        entregado=False,
+        fecha_entrega__isnull=False,
+        fecha_entrega__lt=timezone.now()
+    ).count()
+    
     context = {
         'total_publicados': total_publicados,
         'total_vendidos': total_vendidos,
         'entregas_pendientes': entregas_pendientes,
-        'ventas_dia':ventas_dia
+        'ventas_dia':ventas_dia,
+        'ventas_dia_total': ventas_dia_total,
+        'ventas_mes':ventas_mes,
+        'stock_disponible':stock_disponible,
+        'entregas_atrasadas':entregas_atrasadas,
+        'mes_actual': mes_actual,
     }
     return render(request, 'admin_peluches/home.html', context)
 
@@ -113,7 +129,7 @@ def categoriaAdd(request):
         categoria = request.POST["categoria"]
         Categoria.objects.create(categoria=categoria)
 
-        categorias = Categoria.objects.all()  # 👈 RECARGAR LISTA
+        categorias = Categoria.objects.all()
 
         context = {
             'categorias': categorias
@@ -130,7 +146,7 @@ def categoria_delete(request, pk):
 @login_required
 def peluches_list(request):
     # Obtener filtro desde GET
-    estado_filtro = request.GET.get('estado', 'Todos')  # default = Todos
+    estado_filtro = request.GET.getlist('estado')
     entrega_filtro = request.GET.get('entrega', 'Todos')
     tamano = request.GET.get('tamano')
     min_cm = request.GET.get('min_cm') or None
@@ -145,8 +161,8 @@ def peluches_list(request):
     peluches = Peluche.objects.all()
 
     # filtro por estado_filtro
-    if estado_filtro != 'Todos':
-        peluches = peluches.filter(estado_revision=estado_filtro)
+    if estado_filtro:
+        peluches = peluches.filter(estado_revision__in=estado_filtro)
     
     # filtro por entrega
     if entrega_filtro == 'pendiente':
@@ -201,6 +217,7 @@ def peluches_list(request):
     context = {
         'peluches': page_obj,
         'page_obj': page_obj,
+        'estados': estados,
         'tamanos': Peluche.TAMANOS,
         'tamano_seleccionado': tamano,
         'estado_seleccionado': estado_filtro,
@@ -247,7 +264,7 @@ def peluchesAdd(request):
             ancho_cm=ancho_cm or None)
         
         # 🆕 lógica de venta
-        if estado == "Vendido":
+        if estado == "Vendido" and not obj.fecha_venta:
             obj.fecha_venta = timezone.now()
             if fecha_entrega:
                 obj.fecha_entrega = parse_datetime(fecha_entrega)
@@ -443,13 +460,25 @@ def ventas_reporte(request):
         )
 
     elif periodo == 'mes':
-        inicio = hoy.replace(day=1)
+        mes_param = request.GET.get('mes')
 
-        # siguiente mes menos 1 día
-        if hoy.month == 12:
-            fin = hoy.replace(year=hoy.year + 1, month=1, day=1) - timedelta(days=1)
+        if mes_param:
+            # formato: YYYY-MM
+            año, mes = map(int, mes_param.split('-'))
+            inicio = date(año, mes, 1)
+
+            if mes == 12:
+                fin = date(año + 1, 1, 1) - timedelta(days=1)
+            else:
+                fin = date(año, mes + 1, 1) - timedelta(days=1)
         else:
-            fin = hoy.replace(month=hoy.month + 1, day=1) - timedelta(days=1)
+            # fallback: mes actual
+            inicio = hoy.replace(day=1)
+
+            if hoy.month == 12:
+                fin = hoy.replace(year=hoy.year + 1, month=1, day=1) - timedelta(days=1)
+            else:
+                fin = hoy.replace(month=hoy.month + 1, day=1) - timedelta(days=1)
 
         ventas_qs = ventas_qs.filter(
             fecha_venta__date__gte=inicio,
@@ -465,6 +494,7 @@ def ventas_reporte(request):
         'total': ventas_qs.count(),
         'total_ganado': total_ganado,
         'periodo': periodo,
+        'mes_seleccionado': request.GET.get('mes', ''),
     }
 
     return render(request, 'admin_peluches/ventas_reporte.html', context)

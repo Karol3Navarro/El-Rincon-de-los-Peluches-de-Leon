@@ -7,8 +7,19 @@
         <div class="mb-3">
             <a href="?periodo=dia" class="btn btn-sm btn-dia">Día</a>
             <a href="?periodo=semana" class="btn btn-sm btn-semana">Semana</a>
-            <a href="?periodo=mes" class="btn btn-sm btn-mes">Mes</a>
+            <a href="#" id="btnMes" class="btn btn-sm btn-mes">Mes</a>
             <a href="?periodo=todos" class="btn btn-sm btn-todos">Todos</a>
+            <form method="get" id="formMes" class="form-mes d-none">
+                <input type="hidden" name="periodo" value="mes">
+
+                <input type="month" name="mes" 
+                    value="{{ mes_seleccionado|default:'' }}">
+
+                <button type="submit">
+                    Aplicar
+                </button>
+            </form>
+            
         </div>
         <div class="alert alert-info">
             Total ventas: <strong>{{ total }}</strong>
@@ -68,7 +79,7 @@
                     </div>
                     <!-- FOOTER -->
                     <div class="modal-footer d-flex gap-2 w-100">
-                        <a id="btnVerPeluche" class="btn btn-primary flex-fill" href="#">Ver Peluche</a>
+                        <a id="btnVerPeluche" class="btn btn-custom mt-3 w-100 flex-fill" href="#">Ver Peluche</a>
                     </div>
                 </div>
             </div>

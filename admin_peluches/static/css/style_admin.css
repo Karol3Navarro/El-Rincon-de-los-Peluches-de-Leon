@@ -20,7 +20,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-main) !important;
 }
 .login-card {
     width: 100%;
@@ -138,14 +137,7 @@
     box-shadow: 0 0 0 0.2rem rgba(255, 140, 66, 0.25);
     border-color: var(--orange);
 }
-.btn-custom {
-    background: var(--orange) !important;
-    color: white !important;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-    transition: 0.3s;
-}
+
 .btn-close {
     opacity: 0.7;
 }
@@ -157,7 +149,12 @@
 /*  */
 body {
     font-family: 'Open Sans', sans-serif;
-    background: var(--bg-main) !important;
+    background: 
+        linear-gradient(rgba(255,243,176,0.9), rgba(255,243,176,0.9)),
+        url("/static/img/oso.png");
+
+    background-repeat: repeat;
+    background-size: 75px;
     color: var(--brown) !important;
 }
 
@@ -455,6 +452,7 @@ a:hover {
     display: block;
     margin-top: 5px;
     color: var(--brown);
+    text-decoration: none;
 }
 
 /* Sidebar Filtro */
@@ -576,10 +574,24 @@ a:hover {
     color: white !important;
     border: none;
     border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
 }
 
 .btn-custom:hover {
     background: var(--orange-hover);
+}
+
+.btn-calendario {
+    background: var(--orange) !important;
+    color: white !important;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
+}
+.btn-calendario:hover{
+    background: var(white);
 }
 
 /* =========================
@@ -731,6 +743,63 @@ a:hover {
 .btn-todos{
     background: var(--rainbow-5) !important;
     color: white !important;
+}
+/* Form filtro mes */
+.form-mes {
+    background: var(--bg-soft);
+    border: 2px solid var(--rainbow-4);
+    border-radius: 14px;
+    padding: 10px 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: fit-content;   /* 🔥 clave */
+    max-width: 100%;
+
+    box-shadow: 0 4px 10px rgba(90, 62, 43, 0.15);
+    transition: all 0.3s ease;
+}
+
+/* animación suave */
+.form-mes.show {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* input */
+.form-mes input[type="month"] {
+    border-radius: 10px;
+    border: 2px solid var(--rainbow-4);
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+/* botón */
+.form-mes button {
+    background: var(--rainbow-4);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 6px 12px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.form-mes button:hover {
+    background: #3b82f6;
+    transform: translateY(-1px);
 }
 
 /* Footer */

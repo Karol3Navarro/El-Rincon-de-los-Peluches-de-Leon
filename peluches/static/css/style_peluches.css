@@ -59,7 +59,12 @@
 /*  */
 body {
     font-family: 'Open Sans', sans-serif;
-    background: var(--bg-main) !important;
+    background: 
+        linear-gradient(rgba(255,243,176,0.9), rgba(255,243,176,0.9)),
+        url("/static/img/oso.png");
+
+    background-repeat: repeat;
+    background-size: 75px;
     color: var(--brown) !important;
 }
 
@@ -77,7 +82,7 @@ a:hover {
     color: var(--orange) !important;
 }
 
-button:not(.carousel-control-prev):not(.carousel-control-next) {
+button:not(.carousel-control-prev):not(.carousel-control-next):not(.navbar-toggler) {
     background: var(--orange);
     color: white;
     border: none;
@@ -99,9 +104,6 @@ button:not(.carousel-control-prev):not(.carousel-control-next) {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
 }
-.swiper-wrapper {
-    align-items: stretch; /* 🔥 clave para igualar alturas */
-}
 .card-body {
     display: flex;
     flex-direction: column;
@@ -118,7 +120,7 @@ button:not(.carousel-control-prev):not(.carousel-control-next) {
 .card-body img {
     border-radius: 10px;
     object-fit: cover;
-    height: 180px;
+    height: 250px;
     width: 100%;
 }
 .card-body .btn{
@@ -147,6 +149,14 @@ button:not(.carousel-control-prev):not(.carousel-control-next) {
     width: 100%;
     height: 250px;       /* altura fija */
     object-fit: cover;   /* recorta sin deformar */
+}
+.swiper-slide {
+    height: auto !important;
+    display: flex;
+}
+
+.swiper-slide .card-product {
+    height: 100%;
 }
 
 /* Peluches */
@@ -268,7 +278,9 @@ button:not(.carousel-control-prev):not(.carousel-control-next) {
 }
 
 .swiper {
-    width: 100%;
+    width: 90%;          /* 🔥 más angosto */
+    max-width: 1500px;   /* 🔥 límite */
+    margin: 0 auto;
     position: relative;
     overflow: visible; 
 }
@@ -296,6 +308,7 @@ button:not(.carousel-control-prev):not(.carousel-control-next) {
 .swiper-wrapper {
     align-items: stretch;
 }
+
 
 /* Footer */
 .footer {
@@ -411,20 +424,6 @@ button:not(.carousel-control-prev):not(.carousel-control-next) {
 /* =========================
    BOTONES
 ========================= */
-.btn-filtrar{
-    background: linear-gradient(45deg,
-        var(--rainbow-1),
-        var(--rainbow-2),
-        var(--rainbow-3),
-        var(--rainbow-4),
-        var(--rainbow-5)
-    );
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 12px;
-    cursor: pointer;
-}
 
 .btn-limpiar{
     text-align: center;

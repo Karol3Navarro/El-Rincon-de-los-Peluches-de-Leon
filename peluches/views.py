@@ -89,26 +89,6 @@ def peluches(request):
 #Chatgpt dice probar con ngrok
 #o Render, Railway pero hay que subirlo a github
 
-#ESTE ES CON EL NUMERO DENTRO DEL HTML
-# def ver_peluche(request, id_peluche):
-#     peluche = get_object_or_404(Peluche, id_peluche=id_peluche)
-
-#     # Obtener primera imagen
-#     imagen_url = ""
-#     if peluche.imagenes.exists():
-#         imagen_url = request.build_absolute_uri(
-#             peluche.imagenes.first().imagen.url
-#         )
-
-#     # URL del producto (para compartir)
-#     producto_url = request.build_absolute_uri(request.path)
-
-#     # Mensaje WhatsApp
-#     mensaje = f"Hola, me interesa este peluche {peluche.nombre} {producto_url}"
-
-#     context = {'peluche': peluche, 'imagen_url': imagen_url, 'producto_url': producto_url, 'mensaje': mensaje}
-#     return render(request, 'peluches/ver_peluche.html', context)
-
 def ver_peluche(request, id_peluche):
     peluche = get_object_or_404(Peluche, id_peluche=id_peluche)
     categorias = Categoria.objects.all()

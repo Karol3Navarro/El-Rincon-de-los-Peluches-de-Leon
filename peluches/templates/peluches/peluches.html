@@ -18,7 +18,7 @@
                     {% endfor %}
                 </div>
                 <!-- Botón ver más -->
-                <button type="button" id="verMasCategorias" class="btn-limpiar">Ver más</button>
+                <button type="button" id="verMasCategorias" class="btn-limpiar btn-sm">Ver más</button>
 
                 <!-- Estado -->
                 <label>Estado</label>
@@ -82,7 +82,7 @@
                                 <h5 class="recorte">{{ x.nombre }}</h5>
                                 <p>{{ x.categoria }}</p>
                                 <p class="precio">${{ x.precio|clp }}</p>
-                                <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn">Ver Peluche</a>
+                                <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-sm">Ver Peluche</a>
                             </div>
                         </div>
                     {% endfor %}

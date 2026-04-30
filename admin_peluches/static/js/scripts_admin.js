@@ -13,6 +13,19 @@ document.addEventListener("DOMContentLoaded", () => {
     estado.addEventListener("change", toggle);
     toggle();
 });
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("JS Funcionando")
+    const btnMes = document.getElementById('btnMes');
+    const formMes = document.getElementById('formMes');
+
+    if (btnMes && formMes) {
+        btnMes.addEventListener('click', function (e) {
+            e.preventDefault();
+            formMes.classList.toggle('d-none');
+            formMes.classList.toggle('show');
+        });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');

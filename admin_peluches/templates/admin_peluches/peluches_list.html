@@ -19,7 +19,7 @@
                     {% endfor %}
                 </div>
                 <!-- Botón ver más -->
-                <button type="button" id="verMasCategorias" class="btn-limpiar">Ver más</button>
+                <button type="button" id="verMasCategorias" class="btn-limpiar btn-sm btn-custom">Ver más</button>
 
                 <!-- Filtro Estado -->
                 <label for="estado">Filtrar por estado:</label>
@@ -63,9 +63,9 @@
                 <input type="number" name="min_cm" placeholder="Min cm" class="filtro">
                 <input type="number" name="max_cm" placeholder="Max cm" class="filtro">
 
-                <button type="submit" class="btn-filtrar">Filtrar</button>
+                <button type="submit" class="btn-filtrar btn-custom">Filtrar</button>
             
-                <a href="{% url 'peluches_list' %}" class="btn-limpiar">Limpiar filtros</a>
+                <a href="{% url 'peluches_list' %}" class="btn-limpiar">Limpiar</a>
             </form>
         </aside>
         <!-- Peluches -->
