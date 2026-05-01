@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle();
 });
 document.addEventListener('DOMContentLoaded', function () {
-    console.log("JS Funcionando")
     const btnMes = document.getElementById('btnMes');
     const formMes = document.getElementById('formMes');
 

@@ -126,6 +126,6 @@ import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = '/admin_peluches/login/'
+LOGIN_REDIRECT_URL = '/admin_peluches/'
+LOGOUT_REDIRECT_URL = '/admin_peluches/login/'

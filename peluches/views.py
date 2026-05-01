@@ -106,7 +106,13 @@ def ver_peluche(request, id_peluche):
     mensaje = f"Hola, me interesa este peluche 🧸 {peluche.nombre} {producto_url}"
 
     # Peluches relacionados (misma categoría, distintos del peluche actual)
-    peluches_relacionados = Peluche.objects.filter(categoria=peluche.categoria).exclude(id_peluche=peluche.id_peluche)[:4]
+    peluches_relacionados = (
+        Peluche.objects
+        .filter(categoria=peluche.categoria)
+        .exclude(id_peluche=peluche.id_peluche)
+        .exclude(estado_revision__in=['Vendido', 'Sin Publicar'])
+        .order_by('?')[:4]
+    )
 
     context = {
         'peluche': peluche,
