@@ -140,6 +140,7 @@ def categoriaAdd(request):
 def categoria_delete(request, pk):
     categoria = get_object_or_404(Categoria, id_categoria=pk)
     categoria.delete()
+    messages.success(request, "Categoría eliminada correctamente 🗑️")
     return redirect('categoriaAdd')
 
 #----Peluches----
@@ -284,23 +285,19 @@ def peluchesAdd(request):
                 peluche=obj,
                 imagen=img
             )
+        
+        messages.success(request, "Peluche agregado correctamente 🧸")
 
-        return render(request, 'admin_peluches/peluches_add.html')
+        return redirect('peluches_list')
 
 @login_required
-def peluches_del(request,pk):
-    context={}
-    try:
-        peluche= Peluche.objects.get(id_peluche=pk)
+def peluches_del(request, pk):
+    peluche = get_object_or_404(Peluche, id_peluche=pk)
+    peluche.delete()
 
-        peluche.delete()
-        peluches = Peluche.objects.all()
-        context = {'peluches' : peluches}
-        return render(request, 'admin_peluches/peluches_list.html', context)
-    except:
-        peluches = Peluche.objects.all()
-        context= {'peluches': peluches}
-        return render(request, 'admin_peluches/peluches_list.html', context)
+    messages.success(request, "Peluche eliminado correctamente 🗑️")
+
+    return redirect('peluches_list')
 
 #Eliminar Imagenes de Media/Peluches
 @login_required
@@ -374,7 +371,9 @@ def peluchesUpdate(request):
         for img in imagenes:
             PelucheImagen.objects.create(peluche=peluche, imagen=img)
 
+        messages.success(request, "Peluche actualizado correctamente ✏️")
         return redirect('peluche', id_peluche=peluche.id_peluche)
+    
 @login_required
 def peluche_imagen_del(request, id):
     img = PelucheImagen.objects.get(id=id)
@@ -386,8 +385,9 @@ def peluche_imagen_del(request, id):
 
     peluche_id = img.peluche.id_peluche
     img.delete()
-
+    messages.success(request, "Imagen eliminada correctamente 🖼️")
     return redirect('peluches_findEdit', pk=peluche_id)
+
 @login_required
 def peluche(request, id_peluche):
     peluche = get_object_or_404(Peluche, id_peluche=id_peluche)

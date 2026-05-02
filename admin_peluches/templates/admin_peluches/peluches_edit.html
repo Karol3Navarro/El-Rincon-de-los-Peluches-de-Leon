@@ -5,6 +5,14 @@
         {% if peluche %}
         <h2 class="text-center mb-4">Editar Peluche</h2>
         <form action="{% url 'peluchesUpdate' %}" method="POST" enctype="multipart/form-data">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
             {% csrf_token %}
             <input type="hidden" name="id_peluche" value="{{ peluche.id_peluche }}">
             <div class="row">
@@ -17,7 +25,7 @@
                                 {% for img in peluche.imagenes.all %}
                                     <div class="preview-item">
                                         <img src="{{ img.imagen.url }}">
-                                        <a href="{% url 'peluche_imagen_del' img.id %}" onclick="return confirm('¿Eliminar imagen?')" class="btn-eliminar">
+                                        <a href="#" class="btn-eliminar btnEliminarImg" data-id="{{ img.id }}" data-bs-toggle="modal" data-bs-target="#modalEliminarImagen">
                                             ×
                                         </a>
                                     </div>
@@ -34,6 +42,30 @@
                                 📷 Arrastra o selecciona imágenes
                             </div>
                             <div id="preview" class="preview-grid"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de Eliminar Imagen -->
+                <div class="modal fade" id="modalEliminarImagen" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Eliminar imagen</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            ¿Seguro que deseas eliminar esta imagen? 🖼️
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a id="btnConfirmarEliminarImg" href="#" class="btn btn-danger">
+                                Sí, eliminar
+                            </a>
+                        </div>
+
                         </div>
                     </div>
                 </div>
@@ -79,12 +111,34 @@
                             <label>Lugar entrega</label>
                             <input type="text" name="lugar_entrega" value="{{ peluche.lugar_entrega }}" class="form-control mb-2">
                         </div>
-                        <button type="submit" name="opcion" value="Actualizar" class="btn btn-custom mt-3 w-100">
+                        <button type="button" class="btn btn-custom mt-3 w-100" data-bs-toggle="modal" data-bs-target="#modalUpdate">
                             Actualizar Peluche
                         </button>
                         <a href="{% url 'peluches_list' %}" class="d-block mt-3 text-center" style="text-decoration: none;">
                             Volver
                         </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal de Confirmacion -->
+            <div class="modal fade" id="modalUpdate" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar actualización</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        ¿Seguro que quieres actualizar este peluche? 🧸
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Sí, actualizar</button>
+                    </div>
+
                     </div>
                 </div>
             </div>

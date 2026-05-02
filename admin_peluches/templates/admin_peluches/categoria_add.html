@@ -2,6 +2,14 @@
 {% load static %}
 {% block body %}
     <div class="container py-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
         <h2 class="text-center mb-4">Gestión de Categorías</h2>
         <div class="row">
             <!-- IZQUIERDA: LISTADO -->
@@ -13,9 +21,9 @@
                             {% for c in categorias %}
                                 <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
                                     <span>{{ c.categoria }}</span>
-                                    <a href="{% url 'categoria_delete' c.id_categoria %}" onclick="return confirm('¿Eliminar categoría?')" class="btn btn-sm btn-danger">
+                                    <button class="btn btn-sm btn-danger btnEliminarCategoria" data-id="{{ c.id_categoria }}">
                                         ✕
-                                    </a>
+                                    </button>
                                 </div>
                             {% endfor %}
                         </div>
@@ -38,6 +46,28 @@
                             Agregar categoría
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal eliminar categoría -->
+    <div class="modal fade" id="modalEliminarCategoria" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    ¿Seguro que quieres eliminar esta categoría? 🗑️
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a id="btnConfirmarEliminarCategoria" class="btn btn-danger">
+                        Sí, eliminar
+                    </a>
                 </div>
             </div>
         </div>

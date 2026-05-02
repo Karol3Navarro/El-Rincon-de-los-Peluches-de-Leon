@@ -1,3 +1,35 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const alerts = document.querySelectorAll('.alert');
+
+    if (!alerts.length) return;
+
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+
+        }, 3000);
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const botones = document.querySelectorAll(".btnEliminarImg");
+    const btnConfirmar = document.getElementById("btnConfirmarEliminarImg");
+
+    if (!botones.length || !btnConfirmar) return;
+
+    botones.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const id = this.dataset.id;
+            btnConfirmar.href = `/admin_peluches/peluche_imagen_del/${id}/`;
+        });
+    });
+});
+
 document.addEventListener("DOMContentLoaded", () => {
 
     const estado = document.getElementById("estado_revision");
@@ -207,7 +239,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
     document.querySelectorAll(".fila-peluche").forEach(fila => {
-        console.log("Js Funcionando")
         fila.addEventListener("click", function () {
 
             document.getElementById("modalNombre").innerText = this.dataset.nombre;
@@ -277,4 +308,26 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem(STORAGE_KEY, expanded);
         applyState();
     });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("JS Funcionado")
+    const botones = document.querySelectorAll(".btnEliminarCategoria");
+    const btnConfirmar = document.getElementById("btnConfirmarEliminarCategoria");
+
+    if (!botones.length || !btnConfirmar) return;
+
+    const modal = new bootstrap.Modal(document.getElementById("modalEliminarCategoria"));
+
+    botones.forEach(btn => {
+        btn.addEventListener("click", function () {
+
+            const id = this.dataset.id;
+
+            btnConfirmar.href = `/admin_peluches/categoria/eliminar/${id}/`;
+
+            modal.show();
+        });
+    });
+
 });

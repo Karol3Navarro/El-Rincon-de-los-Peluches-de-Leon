@@ -3,7 +3,7 @@
 {% block body %}
     <div class="container py-4">
         <h2 class="text-center mb-4">Formulario</h2>
-        <form action="peluchesAdd" method="POST" enctype="multipart/form-data">
+        <form action="{% url 'peluchesAdd' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
                 <!-- Izquierda -->
@@ -55,13 +55,40 @@
                             <label>Lugar entrega</label>
                             <input type="text" name="lugar_entrega" class="form-control mb-2">
                         </div>
-                        <button type="submit" name="opcion" value="Agregar" class="btn btn-custom mt-3 w-100">
+                        <button type="button" class="btn btn-custom mt-3 w-100" data-bs-toggle="modal" data-bs-target="#confirmModal">
                             Agregar Peluche
                         </button>
                         <a href="{% url 'peluches_list' %}" class="d-block mt-3 text-center" style="text-decoration: none;">Volver</a>
                     </div>
                 </div>
             </div>
+
+            <!-- Modal -->
+             <div class="modal fade" id="confirmModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        ¿Estás seguro de que quieres agregar este peluche? 🧸
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        
+                        <!-- ESTE SÍ ENVÍA -->
+                        <button type="submit" class="btn btn-success">
+                            Sí, agregar
+                        </button>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
         </form>
     </div>
     <!-- Tiene JS de admin -->

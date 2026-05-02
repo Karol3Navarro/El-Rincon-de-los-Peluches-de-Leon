@@ -68,8 +68,18 @@
                 <a href="{% url 'peluches_list' %}" class="btn-limpiar">Limpiar</a>
             </form>
         </aside>
+
         <!-- Peluches -->
         <main class="productos-area">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
             <h2>Peluches</h2>
             <div class="coleccion">
                 {% if peluches %}
