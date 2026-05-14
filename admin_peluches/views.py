@@ -159,7 +159,7 @@ def peluches_list(request):
     
     query = request.GET.get('q')
 
-    peluches = Peluche.objects.all()
+    peluches = Peluche.objects.all().order_by('-id_peluche')
 
     # filtro por estado_filtro
     if estado_filtro:
@@ -206,7 +206,8 @@ def peluches_list(request):
         peluches = peluches.filter(
             Q(nombre__icontains=query) | Q(categoria__categoria__icontains=query)
         )
-
+    # Total filtrado
+    total_peluches = peluches.count()
     # 🔥 PAGINACIÓN
     paginator = Paginator(peluches, 16)
     page_number = request.GET.get('page')
@@ -218,6 +219,7 @@ def peluches_list(request):
     context = {
         'peluches': page_obj,
         'page_obj': page_obj,
+        'total_peluches': total_peluches,
         'estados': estados,
         'tamanos': Peluche.TAMANOS,
         'tamano_seleccionado': tamano,

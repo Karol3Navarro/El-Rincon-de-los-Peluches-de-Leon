@@ -60,10 +60,10 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <a id="btnConfirmarEliminarImg" href="#" class="btn btn-danger">
-                                Sí, eliminar
+                                Eliminar
                             </a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         </div>
 
                         </div>
@@ -77,7 +77,7 @@
 
                         <label>Categoría</label>
                         <select name="categoria" class="form-select mb-2">
-                            {% for categoria in categorias %}
+                            {% for categoria in categorias|dictsort:"categoria" %}
                                 <option value="{{ categoria.id_categoria }}" {% if categoria.id_categoria == peluche.categoria.id_categoria %}selected{% endif %}>
                                     {{ categoria.categoria }}
                                 </option>
@@ -135,8 +135,8 @@
                     </div>
 
                     <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Actualizar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Sí, actualizar</button>
                     </div>
 
                     </div>

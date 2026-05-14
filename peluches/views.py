@@ -5,13 +5,13 @@ from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
-    peluches = Peluche.objects.filter(estado_revision__in=['Publicado', 'Vendido'])
+    peluches = Peluche.objects.filter(estado_revision__in=['Publicado', 'Vendido']).order_by('-id_peluche')
     categorias = Categoria.objects.all()
     context= {'peluches': peluches, 'categorias': categorias}
     return render(request, 'peluches/index.html', context)
 
 def peluches(request):
-    peluches = Peluche.objects.filter(estado_revision__in=['Publicado', 'Vendido'])
+    peluches = Peluche.objects.filter(estado_revision__in=['Publicado', 'Vendido']).order_by('-id_peluche')
 
     # Obtener filtros desde GET
     # categoria_id = request.GET.get('categoria')
@@ -85,10 +85,6 @@ def peluches(request):
     }
     return render(request, 'peluches/peluches.html', context)
 
-#Aun no se puede ver la imagen en Whatsapp
-#Chatgpt dice probar con ngrok
-#o Render, Railway pero hay que subirlo a github
-
 def ver_peluche(request, id_peluche):
     peluche = get_object_or_404(Peluche, id_peluche=id_peluche)
     categorias = Categoria.objects.all()
@@ -99,11 +95,14 @@ def ver_peluche(request, id_peluche):
 
     producto_url = request.build_absolute_uri(request.path)
 
-    # Tomamos la configuración del admin (solo la primera)
     configuracion = Configuracion.objects.first()
     telefono_whatsapp = configuracion.telefono_whatsapp if configuracion else "56900000000"
 
-    mensaje = f"Hola, me interesa este peluche 🧸 {peluche.nombre} {producto_url}"
+    mensaje = (
+        f"Hola, me interesa este peluche\n"
+        f"*Nombre:* {peluche.nombre}\n"
+        f"{producto_url}"
+    )
 
     # Peluches relacionados (misma categoría, distintos del peluche actual)
     peluches_relacionados = (
@@ -111,7 +110,7 @@ def ver_peluche(request, id_peluche):
         .filter(categoria=peluche.categoria)
         .exclude(id_peluche=peluche.id_peluche)
         .exclude(estado_revision__in=['Vendido', 'Sin Publicar'])
-        .order_by('?')[:4]
+        .order_by('-id_peluche')[:4]
     )
 
     context = {

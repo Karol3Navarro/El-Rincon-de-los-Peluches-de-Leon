@@ -42,7 +42,7 @@
                             Categorías
                         </a>
                         <ul class="dropdown-menu">
-                            {% for cat in categorias %}
+                            {% for cat in categorias|dictsort:"categoria" %}
                                 <li>
                                     <a class="dropdown-item" href="{% url 'peluches' %}?categoria={{ cat.id_categoria }}">
                                         {{ cat.categoria }}

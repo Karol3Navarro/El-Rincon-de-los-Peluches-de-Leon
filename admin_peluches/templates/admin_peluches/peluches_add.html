@@ -28,7 +28,7 @@
                         <input type="text" name="nombre" class="form-control mb-2">
                         <label>Categoría</label>
                         <select name="categoria" class="form-select mb-2">
-                            {% for categoria in categorias %}
+                            {% for categoria in categorias|dictsort:"categoria" %}
                                 <option value="{{categoria.id_categoria}}">
                                     {{categoria.categoria}}
                                 </option>
@@ -78,12 +78,10 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        
-                        <!-- ESTE SÍ ENVÍA -->
                         <button type="submit" class="btn btn-success">
-                            Sí, agregar
+                            Agregar
                         </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
 
                     </div>

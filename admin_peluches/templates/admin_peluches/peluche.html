@@ -84,14 +84,12 @@
                 </div>
 
                 <div class="modal-footer">
+                    <a href="{% url 'peluches_del' pk=peluche.id_peluche %}" class="btn btn-eliminar-peluche btn-peluche">
+                        Eliminar
+                    </a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Cancelar
                     </button>
-
-                    <a href="{% url 'peluches_del' pk=peluche.id_peluche %}"
-                    class="btn btn-danger">
-                        Sí, eliminar
-                    </a>
                 </div>
 
             </div>
