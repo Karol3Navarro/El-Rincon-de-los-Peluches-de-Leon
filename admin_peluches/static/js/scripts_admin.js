@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const alerts = document.querySelectorAll('.alert');
+    const alerts = document.querySelectorAll('.alert:not(.alert-reporte)');
 
     if (!alerts.length) return;
 
@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'es',
+        timeZone: 'America/Santiago',
         firstDay: 1,
         initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
         weekNumbers: false,
@@ -86,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("modalTitulo").innerText = info.event.title;
 
             document.getElementById("modalFecha").innerText =
-                "📅 " + fecha.toLocaleDateString() +
-                " ⏰ " + fecha.toLocaleTimeString();
+                "📅 " + fecha.toLocaleDateString('es-CL') +
+                " ⏰ " + fecha.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
 
             document.getElementById("modalLugar").innerText =
                 "📍 " + (info.event.extendedProps.description || "No definido");
@@ -284,7 +285,9 @@ document.addEventListener('hidden.bs.modal', function (event) {
 
 document.addEventListener("DOMContentLoaded", function () {
     const btn = document.getElementById("verMasCategorias");
-    if (!btn) return;
+    const container = document.getElementById("categorias-lista");
+
+    if (!btn || !container) return;
 
     const items = document.querySelectorAll(".categoria-item");
     const STORAGE_KEY = "categorias_expandidas";
@@ -292,11 +295,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let expanded = localStorage.getItem(STORAGE_KEY) === "true";
 
     function applyState() {
+        // mostrar/ocultar items
         items.forEach((el, index) => {
             if (index >= 3) {
                 el.classList.toggle("hidden-cat", !expanded);
             }
         });
+
+        // activar scroll SOLO cuando está expandido
+        container.classList.toggle("expanded", expanded);
 
         btn.textContent = expanded ? "Ver menos" : "Ver más";
     }
@@ -311,7 +318,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("JS Funcionado")
     const botones = document.querySelectorAll(".btnEliminarCategoria");
     const btnConfirmar = document.getElementById("btnConfirmarEliminarCategoria");
 

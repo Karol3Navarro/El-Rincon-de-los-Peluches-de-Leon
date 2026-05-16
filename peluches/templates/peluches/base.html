@@ -41,7 +41,7 @@
                         <a class="nav-link dropdown-toggle active" href="#" data-bs-toggle="dropdown">
                             Categorías
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu dropdown-menu-categorias">
                             {% for cat in categorias|dictsort:"categoria" %}
                                 <li>
                                     <a class="dropdown-item" href="{% url 'peluches' %}?categoria={{ cat.id_categoria }}">

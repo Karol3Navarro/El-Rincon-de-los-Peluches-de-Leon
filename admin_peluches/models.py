@@ -31,8 +31,8 @@ class Peluche(models.Model):
     fecha_venta = models.DateTimeField(null=True, blank=True)
     lugar_entrega = models.CharField(max_length=255, null=True, blank=True)
     entregado = models.BooleanField(default=False)
-    alto_cm = models.PositiveIntegerField(null=True, blank=True)
-    ancho_cm = models.PositiveIntegerField(null=True, blank=True)
+    alto_cm = models.PositiveIntegerField(default=0)
+    ancho_cm = models.PositiveIntegerField(default=0)
     tamano = models.CharField(max_length=10, choices=TAMANOS, default='Mediano')
     
     def save(self, *args, **kwargs):

@@ -2,18 +2,18 @@
 {% block body %}
     <div class="layout-peluches">
         <!-- SIDEBAR FILTROS -->
-        <aside class="filtros-panel">
+        <aside class="filtros-panel filtros-panel">
             <h4>Filtros 🧸</h4>
             <form method="get" id="filtroForm" class="filtros-form">
                 <!-- Categoría -->
                 <label>Categoría</label>
-                <div class="checkbox-group" id="categorias-lista">
+                <div class="checkbox-group filtro-box" id="categorias-lista">
                     {% for cat in categorias|dictsort:"categoria" %}
                         <div class="form-check categoria-item {% if forloop.counter > 3 %}hidden-cat{% endif %}">
                             <input class="form-check-input filtro" type="checkbox" name="categoria" value="{{ cat.id_categoria }}" id="cat{{ cat.id_categoria }}"
                                 {% if cat.id_categoria|stringformat:"s" in filtro_categoria %}checked{% endif %}
-                                onchange="this.form.submit()">
-                            <label class="form-check-label" for="cat{{ cat.id_categoria }}">{{ cat.categoria }}</label>
+                                onchange="">
+                            <label class="form-check-label" for="cat{{ cat.id_categoria }}">{{ cat.categoria }} ({{ cat.total_peluches }})</label>
                         </div>
                     {% endfor %}
                 </div>
@@ -24,12 +24,12 @@
                 <label>Estado</label>
                 <div class="checkbox-group">    
                     <div class="form-check">
-                        <input class="form-check-input filtro" type="checkbox" name="estado" value="Publicado" onchange="this.form.submit()"
+                        <input class="form-check-input filtro" type="checkbox" name="estado" value="Publicado" onchange=""
                             {% if "Publicado" in estado_seleccionado %}checked{% endif %}>
                         <label class="form-check-label">Disponible</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input filtro" type="checkbox" name="estado" value="Vendido" onchange="this.form.submit()"
+                        <input class="form-check-input filtro" type="checkbox" name="estado" value="Vendido" onchange=""
                             {% if "Vendido" in estado_seleccionado %}checked{% endif %}>
                         <label class="form-check-label">Vendido</label>
                     </div>
@@ -45,7 +45,7 @@
                 <div class="checkbox-group">
                     {% for t in tamanos %}
                         <div class="form-check">
-                            <input class="form-check-input filtro" type="checkbox" name="tamano" value="{{ t.0 }}" onchange="this.form.submit()"
+                            <input class="form-check-input filtro" type="checkbox" name="tamano" value="{{ t.0 }}" onchange=""
                                 {% if t.0 in tamano_seleccionado %}checked{% endif %}>
                             <label class="form-check-label">{{ t.1 }}</label>
                         </div>
@@ -67,26 +67,28 @@
             <h2>Peluches</h2>
             <div class="coleccion">
                 {% if peluches %}
-                <div class="productos-contenedor">
-                    {% for x in peluches %}
-                        <div class="card">
-                            {% if x.estado_revision == 'Vendido' %}
-                                <div class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</div>
-                            {% endif %}
+                    <div class="productos-contenedor">
+                        {% for x in peluches %}
+                            <div class="card">
+                                {% if x.estado_revision == 'Vendido' %}
+                                    <div class="badge bg-danger position-absolute top-0 start-0 m-2">Vendido</div>
+                                {% endif %}
 
-                            {% if x.imagenes.all %}
-                                <img src="{{ x.imagenes.all.0.imagen.url }}">
-                            {% endif %}
+                                {% if x.imagenes.all %}
+                                    <img src="{{ x.imagenes.all.0.imagen.url }}">
+                                {% endif %}
 
-                            <div class="card-body">
-                                <h5 class="recorte">{{ x.nombre }}</h5>
-                                <p>{{ x.categoria }}</p>
-                                <p class="precio">${{ x.precio|clp }}</p>
-                                <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-sm">Ver Peluche</a>
+                                <div class="card-body">
+                                    <h5 class="recorte">{{ x.nombre }}</h5>
+                                    <p>{{ x.categoria }}</p>
+                                    <p class="precio">${{ x.precio|clp }}</p>
+                                    <a href="{% url 'ver_peluche' id_peluche=x.id_peluche nombre=x.nombre|slugify%}" class="btn btn-sm">Ver Peluche</a>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No hay peluches para mostrar.</p>
                 {% endif %}
             </div>
         </main>

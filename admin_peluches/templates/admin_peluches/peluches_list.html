@@ -3,18 +3,18 @@
 {% block body %}
     <div class="layout-peluches">
         <!-- SIDEBAR FILTROS -->
-        <aside class="filtros-panel">
+        <aside class="filtros-panel filtros-panel">
             <h4>Filtros 🧸</h4>
             <form method="get" id="filtroForm" class="filtros-form">
                 <!-- Filtro Categoria -->
                 <label>Categoría</label>
-                <div class="checkbox-group" id="categorias-lista">
+                <div class="checkbox-group filtro-box" id="categorias-lista">
                     {% for cat in categorias|dictsort:"categoria" %}
                         <div class="form-check categoria-item {% if forloop.counter > 3 %}hidden-cat{% endif %}">
                             <input class="form-check-input filtro" type="checkbox" name="categoria" value="{{ cat.id_categoria }}" id="cat{{ cat.id_categoria }}"
                                 {% if cat.id_categoria|stringformat:"s" in filtro_categoria %}checked{% endif %}
-                                onchange="this.form.submit()">
-                            <label class="form-check-label" for="cat{{ cat.id_categoria }}">{{ cat.categoria }}</label>
+                                onchange="">
+                            <label class="form-check-label" for="cat{{ cat.id_categoria }}">{{ cat.categoria }} ({{ cat.total_peluches }})</label>
                         </div>
                     {% endfor %}
                 </div>
@@ -26,14 +26,7 @@
                 <div class="checkbox-group">
                     {% for estado in estados %}
                         <div class="form-check">
-                            <input class="form-check-input filtro"
-                                type="checkbox"
-                                name="estado"
-                                value="{{ estado }}"
-                                id="estado{{ forloop.counter }}"
-                                {% if estado in estado_seleccionado %}checked{% endif %}
-                                onchange="this.form.submit()">
-
+                            <input class="form-check-input filtro" type="checkbox" name="estado" value="{{ estado }}" id="estado{{ forloop.counter }}" {% if estado in estado_seleccionado %}checked{% endif %} onchange="">
                             <label class="form-check-label" for="estado{{ forloop.counter }}">
                                 {{ estado }}
                             </label>
@@ -51,7 +44,7 @@
                 <div class="checkbox-group">
                     {% for t in tamanos %}
                         <div class="form-check">
-                            <input class="form-check-input filtro" type="checkbox" name="tamano" value="{{ t.0 }}" onchange="this.form.submit()"
+                            <input class="form-check-input filtro" type="checkbox" name="tamano" value="{{ t.0 }}" onchange=""
                                 {% if t.0 in tamano_seleccionado %}checked{% endif %}>
                             <label class="form-check-label">{{ t.1 }}</label>
                         </div>

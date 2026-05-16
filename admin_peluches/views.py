@@ -202,10 +202,27 @@ def peluches_list(request):
             pass
 
     #Filtrar por búsqueda
-    if query and query.strip() != "":  
-        peluches = peluches.filter(
-            Q(nombre__icontains=query) | Q(categoria__categoria__icontains=query)
+    if query and query.strip():
+        words = query.split()
+
+        for word in words:
+            peluches = peluches.filter(
+                Q(nombre__icontains=word) |
+                Q(descripcion__icontains=word) |
+                Q(categoria__categoria__icontains=word) |
+                Q(tamano__icontains=word) |
+                Q(estado_revision__icontains=word)
+            ).distinct()
+    
+    categorias = (
+        Categoria.objects
+        .annotate(
+            total_peluches=Count(
+                'peluche',
+                filter=Q(peluche__estado_revision__in=['Publicado', 'Vendido'])
+            )
         )
+    )
     # Total filtrado
     total_peluches = peluches.count()
     # 🔥 PAGINACIÓN
@@ -227,7 +244,7 @@ def peluches_list(request):
         'entrega_seleccionado': entrega_filtro,
         'min_cm': min_cm or '',
         'max_cm': max_cm or '',
-        'categorias': Categoria.objects.all(),
+        'categorias': categorias,
         'filtro_categoria': categoria_id,
         'precio_min': precio_min or '',
         'precio_max': precio_max or '',
@@ -253,8 +270,8 @@ def peluchesAdd(request):
         lugar_entrega = request.POST.get("lugar_entrega")
         alto_cm = request.POST.get('alto_cm')   
         ancho_cm = request.POST.get('ancho_cm')
-        alto_cm = int(alto_cm) if alto_cm else None
-        ancho_cm = int(ancho_cm) if ancho_cm else None
+        alto_cm = int(alto_cm) if alto_cm else 0
+        ancho_cm = int(ancho_cm) if ancho_cm else 0
         objCategoria= Categoria.objects.get(id_categoria= categoria)
 
         obj= Peluche.objects.create(
@@ -263,8 +280,8 @@ def peluchesAdd(request):
             precio=precio, 
             descripcion=descripcion, 
             estado_revision=estado,
-            alto_cm=alto_cm or None,
-            ancho_cm=ancho_cm or None)
+            alto_cm=alto_cm,
+            ancho_cm=ancho_cm)
         
         # 🆕 lógica de venta
         if estado == "Vendido" and not obj.fecha_venta:
@@ -417,7 +434,7 @@ def eventos_entrega(request):
             eventos.append({
                 "id": p.id_peluche,
                 "title": p.nombre,
-                "start": p.fecha_entrega.strftime("%Y-%m-%dT%H:%M:%S"),
+                "start": p.fecha_entrega.isoformat(),
                 "description": p.lugar_entrega or "",
                 "image": imagen_url,
             })

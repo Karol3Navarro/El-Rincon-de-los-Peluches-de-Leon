@@ -21,44 +21,46 @@
             </form>
             
         </div>
-        <div class="alert alert-info">
+        <div class="alert alert-info alert-reporte">
             Total ventas: <strong>{{ total }}</strong>
             Total ganado: <strong>${{ total_ganado|clp }}</strong>
         </div>
         <!-- Tabla -->
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Peluche</th>
-                    <th>Fecha venta</th>
-                    <th>Estado entrega</th>
-                    <th>Precio</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in ventas %}
-                    <tr class="fila-peluche"
-                        data-id="{{ v.id_peluche }}"
-                        data-nombre="{{ v.nombre }}"
-                        data-fecha="{{ v.fecha_venta }}"
-                        data-entregado="{{ v.entregado }}"
-                        data-precio="{{ v.precio }}"
-                        data-imagen="{% if v.imagenes.first %}{{ v.imagenes.first.imagen.url }}{% endif %}">
-
-                        <td>{{ v.nombre }}</td>
-                        <td>{{ v.fecha_venta }}</td>
-                        <td>
-                            {% if v.entregado %}
-                                <span class="badge bg-success">Entregado</span>
-                            {% else %}
-                                <span class="badge bg-warning">Pendiente</span>
-                            {% endif %}
-                        </td>
-                        <td>${{ v.precio|clp }}</td>
+        <div class="reportes-table-box">
+            <table class="table table-striped reportes-table">
+                <thead>
+                    <tr>
+                        <th>Peluche</th>
+                        <th>Fecha venta</th>
+                        <th>Estado entrega</th>
+                        <th>Precio</th>
                     </tr>
-                    {% endfor %}
-            </tbody>
-        </table> 
+                </thead>
+                <tbody>
+                    {% for v in ventas %}
+                        <tr class="fila-peluche"
+                            data-id="{{ v.id_peluche }}"
+                            data-nombre="{{ v.nombre }}"
+                            data-fecha="{{ v.fecha_venta }}"
+                            data-entregado="{{ v.entregado }}"
+                            data-precio="{{ v.precio }}"
+                            data-imagen="{% if v.imagenes.first %}{{ v.imagenes.first.imagen.url }}{% endif %}">
+
+                            <td>{{ v.nombre }}</td>
+                            <td>{{ v.fecha_venta }}</td>
+                            <td>
+                                {% if v.entregado %}
+                                    <span class="badge bg-success">Entregado</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            <td>${{ v.precio|clp }}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table> 
+        </div>
         <!-- Modal Peluche -->
         <div class="modal fade" id="pelucheModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

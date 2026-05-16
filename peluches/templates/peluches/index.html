@@ -40,7 +40,7 @@
                             <h5 class="card-title recorte">{{ x.nombre }}</h5>
                             <p class="card-text">{{ x.categoria }}</p>
                             <p class="card-text precio">${{ x.precio|clp  }}</p>
-                            <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}" class="btn btn-sm">Ver Peluche</a>
+                            <a href="{% url 'ver_peluche' id_peluche=x.id_peluche nombre=x.nombre|slugify%}" class="btn btn-sm">Ver Peluche</a>
                         </div>
                     </div>
                 </div>

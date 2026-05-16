@@ -1,11 +1,15 @@
 from django.shortcuts import render, get_object_or_404
 from admin_peluches.models import Categoria, Peluche, Configuracion
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
-    peluches = Peluche.objects.filter(estado_revision__in=['Publicado', 'Vendido']).order_by('-id_peluche')
+    peluches = (
+        Peluche.objects
+        .filter(estado_revision__in=['Publicado', 'Vendido'])
+        .order_by('-id_peluche')[:20]
+    )
     categorias = Categoria.objects.all()
     context= {'peluches': peluches, 'categorias': categorias}
     return render(request, 'peluches/index.html', context)
@@ -58,12 +62,41 @@ def peluches(request):
         pass
     
     #Filtrar por búsqueda
-    if query and query.strip() != "":  
-        peluches = peluches.filter(
-            Q(nombre__icontains=query) | Q(categoria__categoria__icontains=query)
-        )
+    # if query and query.strip():
+    #     words = query.split()
 
-    categorias = Categoria.objects.all()
+    #     q = Q()
+
+    #     for word in words:
+    #         q |= (
+    #             Q(nombre__iregex=r'\b' + word + r'\b') |
+    #             Q(descripcion__iregex=r'\b' + word + r'\b') |
+    #             Q(categoria__categoria__iregex=r'\b' + word + r'\b') |
+    #             Q(tamano__iregex=r'\b' + word + r'\b') |
+    #             Q(estado_revision__iregex=r'\b' + word + r'\b')
+    #         )
+
+    #     peluches = peluches.filter(q).distinct()
+    if query and query.strip():
+        words = query.split()
+
+        for word in words:
+            peluches = peluches.filter(
+                Q(nombre__icontains=word) |
+                Q(descripcion__icontains=word) |
+                Q(categoria__categoria__icontains=word) |
+                Q(tamano__icontains=word) |
+                Q(estado_revision__icontains=word)
+            ).distinct()
+    categorias = (
+        Categoria.objects
+        .annotate(
+            total_peluches=Count(
+                'peluche',
+                filter=Q(peluche__estado_revision__in=['Publicado', 'Vendido'])
+            )
+        )
+    )
     # 🔥 PAGINACIÓN
     paginator = Paginator(peluches, 16)
     page_number = request.GET.get('page')
@@ -85,7 +118,7 @@ def peluches(request):
     }
     return render(request, 'peluches/peluches.html', context)
 
-def ver_peluche(request, id_peluche):
+def ver_peluche(request, id_peluche, nombre):
     peluche = get_object_or_404(Peluche, id_peluche=id_peluche)
     categorias = Categoria.objects.all()
 
@@ -110,8 +143,24 @@ def ver_peluche(request, id_peluche):
         .filter(categoria=peluche.categoria)
         .exclude(id_peluche=peluche.id_peluche)
         .exclude(estado_revision__in=['Vendido', 'Sin Publicar'])
-        .order_by('-id_peluche')[:4]
+        .order_by('?')[:4]
     )
+
+    # Completar hasta 4 si faltan
+    faltantes = 4 - peluches_relacionados.count()
+
+    if faltantes > 0:
+        ids_existentes = peluches_relacionados.values_list('id_peluche', flat=True)
+
+        adicionales = (
+            Peluche.objects
+            .exclude(id_peluche__in=ids_existentes)
+            .exclude(id_peluche=peluche.id_peluche)
+            .exclude(estado_revision__in=['Vendido', 'Sin Publicar'])
+            .order_by('?')[:faltantes]
+        )
+
+        peluches_relacionados = peluches_relacionados | adicionales
 
     context = {
         'peluche': peluche,

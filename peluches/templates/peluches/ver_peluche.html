@@ -49,7 +49,7 @@
         <!-- ABAJO: RELACIONADOS -->
         {% if peluches_relacionados %}
             <div class="mt-5">
-                <h3>Peluches relacionados</h3>
+                <center><h3>Peluches relacionados</h3></center>
                 <div class="row">
                     {% for x in peluches_relacionados %}
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-3">
@@ -66,7 +66,7 @@
                                     <h5 class="card-title recorte">{{ x.nombre }}</h5>  
                                     <p class="card-text">{{ x.categoria }}</p>
                                     <p class="card-text precio">${{ x.precio|clp }}</p>
-                                    <a href="{% url 'ver_peluche' id_peluche=x.id_peluche %}"class="btn btn-sm">
+                                    <a href="{% url 'ver_peluche' id_peluche=x.id_peluche nombre=x.nombre|slugify%}"class="btn btn-sm">
                                         Ver Peluche
                                     </a>
                                 </div>

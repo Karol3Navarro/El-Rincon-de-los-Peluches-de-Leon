@@ -22,16 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&a-eb(e31rxs_bb8v=u92o5&6cd2d(zvc)u3lg7a54=qzedonk'
 
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
-# DEBUG = False
+DEBUG = False
 
-# ALLOWED_HOSTS = [
-#     'elrincondelospeluchesdeleon.com',
-#     'www.elrincondelospeluchesdeleon.com'
-# ]
+ALLOWED_HOSTS = [
+    'elrincondelospeluchesdeleon.com',
+    'www.elrincondelospeluchesdeleon.com'
+]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
