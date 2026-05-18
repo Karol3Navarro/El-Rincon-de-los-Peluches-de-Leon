@@ -1,0 +1,588 @@
+:root {
+    --bg-main: #fff3b0;        /* amarillo suave */
+    --bg-soft: #fff8d6;
+    --brown: #5a3e2b;         /* texto café */
+    --brown-dark: #3e2a1f;
+
+    --orange: #ff8c42;        /* botones */
+    --orange-hover: #ff7a1a;
+
+    /* acentos arcoíris suaves */
+    --rainbow-1: #ff6b6b;
+    --rainbow-2: #ffd93d;
+    --rainbow-3: #6bcB77;
+    --rainbow-4: #4d96ff;
+    --rainbow-5: #b892ff;
+}
+
+/* Navbar */
+.navbar-custom {
+    background: #fffdf5 !important;
+    border-bottom: 3px solid var(--orange);
+    font-family: 'Poppins', sans-serif;
+}
+.navbar-custom .nav-link {
+    color: var(--brown) !important;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.navbar-custom .nav-link:hover {
+    color: var(--orange) !important;
+}
+.navbar-custom .nav-link.active {
+    color: var(--orange) !important;
+}
+.navbar-custom .navbar-brand img {
+    border-radius: 8px;
+    transition: 0.3s;
+}
+.navbar-custom .navbar-brand img:hover {
+    transform: scale(1.05);
+}
+.navbar-custom .btn {
+    background: var(--orange) !important;
+    color: white !important;
+    border: none !important;
+}
+.navbar-custom .btn:hover {
+    background: var(--orange-hover) !important;
+}
+.navbar-custom .form-control {
+    border-radius: 10px;
+    border: 2px solid var(--orange);
+}
+.navbar-custom .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 66, 0.25);
+    border-color: var(--orange);
+}
+
+#categorias-lista {
+    max-height: 140px; /* altura cuando está colapsado */
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+/* cuando está expandido */
+#categorias-lista.expanded {
+    max-height: 260px; /* o el valor que prefieras */
+    overflow-y: auto;  /* 🔥 scroll */
+}
+.dropdown-menu-categorias {
+    max-height: 300px;   /* límite del dropdown */
+    overflow-y: auto;    /* scroll vertical */
+    overflow-x: hidden;
+}
+/* scrollbar bonito */
+.filtro-box::-webkit-scrollbar{
+    height: 10px;
+    width: 10px;
+}
+
+.filtro-box::-webkit-scrollbar-track{
+    background: var(--bg-soft);
+    border-radius: 10px;
+}
+
+.filtro-box::-webkit-scrollbar-thumb{
+    background: var(--orange);
+    border-radius: 10px;
+}
+
+.filtro-box::-webkit-scrollbar-thumb:hover{
+    background: var(--orange-hover);
+}
+/* Scroll elegante solo para el sidebar de filtros completo */
+.filtros-panel::-webkit-scrollbar {
+    width: 6px; /* más delgado que el de categorías */
+}
+
+.filtros-panel::-webkit-scrollbar-track {
+    background: #fff8d6; /* color más suave, casi neutro */
+    border-radius: 8px;
+}
+
+.filtros-panel::-webkit-scrollbar-thumb {
+    background: #d4c28f; /* marrón suave */
+    border-radius: 8px;
+}
+
+.filtros-panel::-webkit-scrollbar-thumb:hover {
+    background: #c8b176; /* un poquito más oscuro al hover */
+}
+/*  */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: 
+        linear-gradient(rgba(255,243,176,0.9), rgba(255,243,176,0.9)),
+        url("/static/img/oso.png");
+
+    background-repeat: repeat;
+    background-size: 75px;
+    color: var(--brown) !important;
+}
+
+/* Scroll global para toda la página */
+body::-webkit-scrollbar {
+    width: 8px; /* ancho del scroll */
+}
+
+body::-webkit-scrollbar-track {
+    background: #fff8d6;  /* fondo del track, suave */
+    border-radius: 8px;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #d4c28f;  /* color del thumb */
+    border-radius: 8px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #c8b176; /* más oscuro al pasar el mouse */
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', 'Nunito', sans-serif;
+    color: var(--brown-dark)!important;
+}
+
+/* Links */
+a {
+    color: var(--brown)!important;
+}
+
+a:hover {
+    color: var(--orange) !important;
+}
+
+button:not(.carousel-control-prev):not(.carousel-control-next):not(.navbar-toggler) {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
+}
+
+/* Cards */
+.card-product{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: #fffdf5 !important;
+    border: 2px solid #e4e4e4;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(90, 62, 43, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+.card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 8px;
+    text-align: center;
+}
+
+.card-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(90, 62, 43, 0.25);
+}
+
+.card-body img {
+    border-radius: 10px;
+    object-fit: cover;
+    height: 250px;
+    width: 100%;
+}
+.card-body .btn{
+    margin-top: auto;
+    background: var(--orange) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
+}
+ .card-body .card-title{
+    margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--brown-dark);
+}
+.recorte{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+    color: var(--brown);
+}
+.card img {
+    width: 100%;
+    height: 250px;       /* altura fija */
+    object-fit: cover;   /* recorta sin deformar */
+}
+.swiper-slide {
+    height: auto !important;
+    display: flex;
+}
+
+.swiper-slide .card-product {
+    height: 100%;
+}
+
+/* Peluches */
+.coleccion{
+    width: 100%;
+    margin-top: 20px;
+    padding: 0 20px; /* opcional para espacio lateral */
+}
+
+.coleccion .col-lib-vid{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.productos-contenedor{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #fffdf5;
+    border: 2px solid #eee;
+    border-radius: 10px;
+
+    font-weight: 500;
+    text-decoration: none;
+
+    transition: all 0.25s ease;
+}
+
+/* hover */
+.page-btn:hover {
+    background: var(--orange);
+    color: white !important;
+    border-color: var(--orange);
+    transform: translateY(-2px);
+}
+
+/* activa */
+.page-btn.active {
+    background: var(--orange);
+    color: white !important;
+    border: none;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Ver_peluche */
+.peluche-detalle {
+    font-family: 'Open Sans', sans-serif;
+}
+.titulo-peluche {
+    font-family: 'Poppins', sans-serif;
+    color: var(--brown-dark);
+}
+.precio {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--orange);
+}
+.descripcion {
+    line-height: 1.6;
+}
+.btn-whatsapp {
+    background: var(--rainbow-3) !important;
+    color: white !important;
+    border-radius: 10px;
+}
+.btn-whatsapp:hover {
+    background: var(--rainbow-3) !important;
+}
+.peluche-box {
+    background: var(--bg-soft) !important;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(90, 62, 43, 0.15);
+}
+
+/* Swiper Img Peluche */
+.mySwiperPeluche {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    float: left;
+}
+.mySwiperPeluche .swiper-slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+.mySwiperPeluche img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+/* Swiper Cards Index*/
+.container-items{
+    width: 100%;
+    padding: 15px;
+}
+
+.swiper {
+    width: 90%;          /* 🔥 más angosto */
+    max-width: 1500px;   /* 🔥 límite */
+    margin: 0 auto;
+    position: relative;
+    overflow: visible; 
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    z-index: 50;
+    color: var(--orange) !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    color: var(--orange-hover);
+    transform: scale(1.1);
+}
+
+.swiper-button-next {
+    right: 10px !important;
+}
+
+.swiper-button-prev {
+    left: 10px !important;
+}
+
+.swiper-wrapper {
+    align-items: stretch;
+}
+
+
+/* Footer */
+.footer {
+    background: linear-gradient(
+        135deg,
+        var(--bg-soft),
+        #fffdf5
+    );
+    border-top: 3px dashed var(--orange);
+    box-shadow: 0 -4px 18px rgba(255, 140, 66, 0.15);
+    text-align: center;
+    margin-top: 40px;
+    padding: 25px 15px;
+}
+.footer-text {
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    color: var(--brown);
+    opacity: 0.8;
+}
+.footer-social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* separación entre iconos */
+    margin-bottom: 10px;
+}
+.footer-social a {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+.footer-social a img {
+    width: 38px;
+    height: 38px;
+    transition: transform 0.2s ease;
+}
+
+.footer-social a img:hover {
+    transform: scale(1.1);
+}
+
+/* Resposive */
+@media (max-width: 600px) {
+    .footer-social a img {
+        width: 40px;
+        height: 40px;
+    }
+}
+@media (max-width: 768px) {
+    .mySwiperPeluche img {
+        height: 280px;
+    }
+}
+
+/* =========================
+   LAYOUT GENERAL
+========================= */
+.layout-peluches{
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.filtros-panel{
+    background: #fffdf5;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px); /* 🔥 clave */
+    overflow-y: auto;               /* 🔥 clave */
+
+    /* opcional para que no quede pegado */
+    padding-right: 10px;
+}
+
+.filtros-panel h4{
+    margin-bottom: 15px;
+    color: var(--brown-dark);
+}
+
+.filtros-form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filtro{
+    padding: 8px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    outline: none;
+    transition: 0.3s;
+}
+
+/* =========================
+   EFECTO ARCOÍRIS BASE
+========================= */
+.filtro:focus{
+    border-color: var(--orange);
+    box-shadow: 0 0 8px rgba(255,140,66,0.3);
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.btn-limpiar{
+    text-align: center;
+    display: block;
+    margin-top: 5px;
+    color: var(--brown);
+    text-decoration: none;
+}
+
+/* =========================
+   PRODUCTOS
+========================= */
+.productos-area{
+    width: 100%;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px){
+    .layout-peluches{
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-panel{
+        position: relative;
+        top: auto;
+    }
+}
+.hidden-cat {
+    display: none;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* checkbox personalizado */
+.form-check-input {
+    appearance: none;
+    -webkit-appearance: none;
+    
+    width: 18px;
+    height: 18px;
+    
+    border: 2px solid var(--brown);
+    border-radius: 50%; /* 🔴 lo vuelve círculo */
+    
+    cursor: pointer;
+    position: relative;
+    transition: 0.25s ease;
+}
+
+/* estado marcado */
+.form-check-input:checked {
+    border: none;
+    background: linear-gradient(45deg,
+        var(--rainbow-1),
+        var(--rainbow-2),
+        var(--rainbow-3),
+        var(--rainbow-4),
+        var(--rainbow-5)
+    );
+    
+    box-shadow: 0 0 8px rgba(255, 140, 66, 0.4);
+}
+
+/* opcional: punto interno en vez de ✓ */
+.form-check-input:checked::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.form-check-label {
+    font-size: 14px;
+}
+
+.categoria-item.hidden-cat {
+    display: none;
+}
