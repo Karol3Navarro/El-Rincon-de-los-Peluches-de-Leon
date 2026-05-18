@@ -29,11 +29,7 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 # ALLOWED_HOSTS = []
 
 
-ALLOWED_HOSTS = [
-    'elrincondelospeluchesdeleon.onrender.com',
-    'www.elrincondelospeluchesdeleon.com',
-    'elrincondelospeluchesdeleon.com',
-]
+ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
