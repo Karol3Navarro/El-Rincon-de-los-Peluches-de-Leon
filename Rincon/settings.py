@@ -28,13 +28,12 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = [
-    'elrincondelospeluchesdeleon.onrender.com',
-    'www.elrincondelospeluchesdeleon.com'
+    '*'
     ]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://elrincondelospeluchesdeleon.onrender.com'
+    'https://el-rincon-de-los-peluches-de-leon.onrender.com'
 ]
 
 # Application definition
