@@ -29,8 +29,9 @@ SECRET_KEY = 'django-insecure-&a-eb(e31rxs_bb8v=u92o5&6cd2d(zvc)u3lg7a54=qzedonk
 DEBUG = False
 
 ALLOWED_HOSTS = [
+    'elrincondelospeluchesdeleon.onrender.com',
+    'www.elrincondelospeluchesdeleon.com',
     'elrincondelospeluchesdeleon.com',
-    'www.elrincondelospeluchesdeleon.com'
 ]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
